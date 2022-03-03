@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Edit here with the names of your latex file and directory (can use ".")
-      DIR: "Skalierbare Methoden der Künstlichen Intelligenz/Zusammenfassung"
+      DIR: "Scalable_AI/Zusammenfassung"
       FILE: Zusammenfassung
     steps:
       - name: Checkout
@@ -30,7 +30,7 @@ jobs:
         working-directory: ${{ env.DIR }}
         run: latexmk -pdf -bibtex ${{ env.FILE }}
       - name: move
-        run: mkdir -p github_artifacts && mv ScalableAI/${{ env.FILE }}.pdf ./github_artifacts/
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
       - name: Upload pdf as artifact
         uses: actions/upload-artifact@v2
         with:
