@@ -1,0 +1,791 @@
+\documentclass[11pt]{scrartcl}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[ngerman]{babel}
+\usepackage{ulem}
+\usepackage{listings}
+\usepackage{bm}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{makecell}
+\title{Machine Learning 1}
+\date{\vspace{-5ex}}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\begin{document}
+\maketitle
+
+\section{Linear Regression}
+
+\begin{itemize}
+    \item Supervised Learning (regression, classification)
+    \item Unsupervised Learning (clustering, dimensionality reduction)
+    \item Matrix: single samples are rows
+    \item Derivative of vector input function is column vector
+    \item \(\bm{\nabla_x} \bm{Ax} = \bm{A}^\top\), \(\bm{\nabla_x} \bm{x}^\top \bm{x} = 2 
+        \bm{x}\), \(\bm{\nabla_x} \bm{x}^\top \bm{A} \bm{x} = 2 \bm{Ax}\)
+    \item Linear Regression: fit line \(y = f(x) + \varepsilon = w_0 + w_1 x + \varepsilon\) 
+        (Guassian noise \(\varepsilon \sim N(0, 1)\))
+    \item Minimize summed/mean squared error \(\mathrm{SSE} = 
+        \sum_{i = 1}^N (y_i - f(\bm{x}_i))^2\) (differentiable, easy to optimize, 
+        estimates mean of target function)
+    \item Multiple inputs: \(\mathrm{SSE} = (\bm{y} - \bm{Xw})^\top (\bm{y} - \bm{Xw})\) 
+        with \(\bm{X} = \begin{bmatrix}
+            1 & \bm{x}_1^\top\\
+            \vdots & \vdots\\
+            1 & \bm{x}_n^\top
+        \end{bmatrix}\)
+    \item Least squares solution (\(\bm{\nabla_w} \mathrm{SSE} = 0\)): \(\bm{w}^* = 
+        (\bm{X}^\top \bm{X})^{-1} \bm{X}^\top \bm{y}\) - closed form because SSE convex for 
+        linear \(f(\bm{x})\) (one minimum) and quadratic in \(w\) (easy to obtain)
+    \item \(R^2 = 1 - \frac{\sum (\hat{y}_n - y_n)^2}{\sum (y_n - \overline{y})^2}\) 
+        (quality: how much variation in \(y\) explained by variation in \(x\))
+    \item Generalized: \(f(\bm{x}) = \bm{\tilde{x}}^\top \bm{w} \rightarrow f(\bm{x}) = 
+        \phi (\bm{x})^\top \bm{w}\), still linear in \(w\) (\(\phi_i\): basis functions)
+    \item \(\bm{w^*} = (\bm{\Phi}^\top \bm{\Phi})^{-1} \bm{\Phi}^\top \bm{y}\) with 
+        \(\bm{\Phi} = \begin{bmatrix}
+            \phi_1^\top \\
+            \vdots \\
+            \phi_n^\top
+        \end{bmatrix}\) (learn any function with suitable \(\phi_i\)) 
+    \item Overfitting: model too complex, fits noise / Underfitting: model too simple for data
+    \item Regularization (limit model): Regularization term in cost function with factor 
+        \(\lambda\)
+    \item \(L_{\mathrm{ridge}} = (\bm{y} - \bm{\Phi} \bm{w})^\top (\bm{y} - \bm{\Phi w}) + 
+        \lambda \bm{w}^\top \bm{w}\) (weight decay / ridge regression)
+    \item \(\bm{w^*}_{\mathrm{ridge}} = (\bm{\Phi}^\top \bm{\Phi} + \lambda \bm{I})^{-1} 
+        \bm{\Phi}^\top \bm{y}\) (easier to invert due to full rank)
+\end{itemize}
+
+\section{Linear Classification}
+
+\begin{itemize}
+    \item Expectation of function wrt a distribution: \(\mathbb{E}_p [f(x)] = 
+        \int p(x) f(x) dx\)
+    \item Conditional expectation: \(\mathbb{E}_p [f(x) | Y = y] = \int p(x | y) f(x) dx\)
+    \item Chain rule: \(\mathbb{E}_p [f(x)] = \int p(y) \mathbb{E}_p [f(x) | Y = y] dx\)
+    \item Monte-carlo: estimate expectation by samples
+    \item Covariance: \(\bm{\Sigma} = \mathbb{E}_p [(\bm{x - \mu})(\bm{x - \mu})^\top]\), 
+        diagonal: variability, other: correlation
+    \item Bernoulli distribution: \(p(x) = \mu^x (1 - \mu)^{(1 - x)}\) (coin toss)
+    \item Multinomial / Categorical Distribution: \(p(c) = \Pi \; \mu_k^{\bm{h}_{c, k}}\) 
+        with 1-hot-encoding (die)
+    \item Gaussian Distribution: \(p(x) = N(x | \mu, \sigma) = \frac{1}{\sqrt{2 \pi \sigma^2}} 
+        \exp \{- \frac{(x - \mu)^2}{2 \sigma^2} \} \)
+    \item Multivariate: \(p(\bm{x}) = N(\bm{x} | \bm{\mu}, \bm{\Sigma}) = 
+        \frac{1}{\sqrt{| 2 \pi \bm{\Sigma} |}} 
+        \exp \{ - \frac{(\bm{x} - \bm{\mu})^\top \bm{\Sigma}^{-1} (\bm{x} - \bm{\mu})}{2} \} \)
+    \item Maximum Likelihood Estimation: \(\bm{\theta}_{\mathrm{ML}} = 
+        \mathrm{argmax}_\theta \mathrm{loglik} (\bm{\theta}, D)\)
+    \item Linear Gaussian model \(p_\theta (y | \bm{x}) = 
+        N(y | \bm{w}^\top \tilde{\bm{x}}, \sigma^2) \rightarrow \) MLE solution equvialent to 
+        least squares, but variance can also be obtained
+    \item Generative model: Assume form of \(p(c)\), \(p(x | c)\), learn them, 
+        predict: compute \(p(c | x) \rightarrow\) learn full joint distribution of data (hard), 
+        gaussian assumption \(\rightarrow\) error
+    \item Discriminative Model: Assume form of \(p(c | x)\) and estimate parameters directly 
+        from data (simpler than generative modelling, only considers points on border)
+    \item Linear classifier: \(f(\bm{x}) = \bm{w}^\top \bm{x} + b\) 
+        (\(\bm{w}\) normal to line, \(b\) is bias)
+    \item Counting number of misclassifcations as loss is very difficult to optimize (NP-hard)
+    \item Regression loss is not robust to outliers (labels restricted to 0, 1)
+    \item Solution: squash output with sigmoid (bounded between 0 and 1)
+    \item Probabilistic View: \(p(c | \bm{x}) = \sigma (\bm{w}^\top \bm{x} + b)^c 
+        (1 - \sigma (\bm{w}^\top \bm{x} + b))^{1 - c} \rightarrow\) optimize loglikelihood 
+        (logistic regression): cross-entropy loss: \( - \sum_i c_i \log f ( \bm{x}_i ) + ( 1 - c_i ) \log ( 1 - f ( \bm{x}_i ) ) \rightarrow\) convex but no closed form \(\rightarrow\) 
+        gradient descent
+    \item Generalized: Use basis functions to make data linear seperable in feature space
+    \item L2 regularization loss: \(\mathrm{penalty}(\tilde{\bm{w}}) = || \tilde{\bm{w}} ||^2\)
+    \item General optimization form: \(\mathrm{argmin}_\theta \sum l(\bm{x}_i, \bm{\theta}) 
+        + \lambda \; \mathrm{penalty}(\bm{\theta})\)
+    \item Gradient descent: \(\bm{x}_{t + 1} = \bm{x}_t - \eta \nabla f(\bm{x}_t)\) with 
+        learning rate \(\eta\)
+    \item Terminate: change small, gradient small, change in value small, or after fixed time
+    \item Stochastic: use one sample for step (good far away, struggle to find exact optimum)
+    \item Stochastic approximation theory: SGD converges to optimum for strictly convex 
+        functions if \(\sum \eta_t = \infty\) and \(\sum \eta_t^2 < \infty \) (for example 
+        \(\eta_t = \frac{1}{t}\))
+    \item Stochastic gradients often better than batch since data-set contains redundancy
+    \item Mini-Batches: intermediate between stochastic and batch, preferable for GPU
+    \item Softmax: \(p(c = i | \bm{x}) = 
+        \frac{\exp (\bm{w}_i^\top \bm{\phi}(\bm{x}))}{\sum \exp (\bm{w}_k^\top 
+        \bm{\phi}(\bm{x}))}\) (each class gets a weight vector)
+    \item Multiclass Classifcation: \(p(c | \bm{x}) = \Pi \; 
+        p(c = k | \bm{x})^{\bm{h}_{c, k}}\) (use softmax) \(\rightarrow\) can be optimized by 
+        gradient descent
+\end{itemize}
+
+\section{Model Selection}
+
+\begin{itemize}
+    \item Model complexity (linear regression: features, \(\lambda\); decision tree: depth, 
+        number of leaves; NNs: layers, neurons; SVMs: features, regularization; Gaussian 
+        Processes: kernel bandwith) \(\rightarrow\) model selection problem
+    \item True risk (unknown) vs. emperical risk (can be evaluated)
+    \item Overfitting (small emperical/high true risk)/Underfitting (high emperical/true risk)
+    \item Expected loss for model and data set size \( n \): \(R(\hat{f}_{D_n}) = 
+        \mathbb{E}_{D_n} [ \mathbb{E}_{x, y} [ ( \hat{f}_{D_n} ( \bm{x} ) - y )^2 ) ] ] \\ = 
+        \mathbb{E}_{D_n} [ \mathbb{E}_{x} [ ( \hat{f}_{D_n} ( \bm{x} ) - 
+        \hat{f}_* ( \bm{x} ) )^2 ] ] + 
+        \mathbb{E}_{x} [ ( \hat{f}_* ( \bm{x} ) - f ( \bm{x} ) )^2 ] + \sigma^2 \\ = 
+        \mathrm{Variance} + \mathrm{Bias}^2 + \mathrm{Noise} \) (bias (structure error) due to 
+        restriction of model, variance due to randomness of data set, \( \hat{f}_{D_n} \): 
+        estimate of \( f \) from data \( D_n \), \( \hat{f}_* ( \bm{x} ) = 
+        \mathbb{E}_{D_n} [ \hat{f}_{D_n} ( \bm{x} ) ] \): best model possible, \(y = 
+        f( \bm{x} ) + \varepsilon \))
+    \item Underfitting: low variance / high bias; Overfitting: high variance / low bias
+    \item Hold-out method: Judge generalization error with validation data set to pick model 
+        (needs more data, unlucky splits can give misleading results)
+    \item Cross validation: Split dataset into \( k \) folds, use each as validation once
+    \item Leave-One-Out: \( k = n \) / Random sub-sampling: Random points used in each fold
+    \item Avoid overfitting: low complexity, regularize, early stopping, noise, augmentation
+    \item Regularization: \( \mathrm{penalty}_{L2} ( \theta ) = || \theta ||_2 \) (optimizing 
+        easy)/\( \mathrm{penalty}_{L1} ( \theta ) = || \theta ||_1 \) (hard, leads to sparse solutions)
+    \item Early stopping: similar effects to L2, efficient (only store best and current weights), 
+        simple, no hyper parameter (but needs validation data)
+    \item Linear regression: input noise (leads to more robust solutions) is the same as L2
+\end{itemize}
+
+\section{Nearest Neighbours, Trees and Forests}
+
+\begin{itemize}
+    \item Non-parametric methods: use training data directly for prediction (complexity adapts 
+        to training data, very fast training, slow predictions, hard for high dimensions)
+    \item KNN: needs lots of training data and less than 20 attributes, can learn complex 
+        functions, regression works similar
+    \item Increasing k reduces variance, increases bias
+    \item Euclidean distance when each variable has same unit, otherwise normalize data
+    \item Cosine Distance (documents, images), Hamming Distance (string data/categorical 
+        features), Manhatten Distance (coordinate-wise), Mahalanobis Distance (unaffected by 
+        coordinate transformations)
+    \item Performance of KNN degrades with irrelevant dimensions/high dimensions (most points 
+        far away) \(\rightarrow\) dimensionality reduction, feature selection
+    \item KD-Tree to find neighbours; Build: choose dimension by longest hyperrectangle side, 
+        median as pivot; Traverse: move down tree, find region containing \( \bm{x} \), find 
+        closest \( \bm{x}^* \), move up for regions intersecting hypersphere, update \( \bm{x}^* \)
+    \item Regression/Classification Tree: split data into two at each node using criterion
+    \item Splitting criterion regression: Minimum residual sum of squares: \( \mathrm{RSS} = 
+        \sum_\mathrm{left} ( y_i - \overline{y}_L )^2 + \sum_\mathrm{right} ( y_i - 
+        \overline{y}_R )^2 \), \( \overline{y} \): average label subtree (variance in subtrees 
+        minimized)
+    \item Criterion classification: Minimum entropy: \( \mathrm{score} = 
+        N_L H ( p_L ) + N_R H ( p_R ) \), \( H ( p_i ) = - \sum_k p_i ( k ) \log p_i ( k ) \): 
+        subtree entropy, \( p_i ( k ) \): proportion of class \( k \) in subtree \( i \)
+    \item Stop: Minimum number of samples per node / maximum depth (tree complexity)
+    \item Trees: easy to compute, no distributional assumption, non-linear, automatic variable 
+        selection, easy to interpret, lower accuracy, sensitive to data change
+    \item Random Forests: use multiple trees to improve accuracy 
+    \item Bagging: Fit trees to bootstrap samples from data (combine by voting/averaging)
+    \item Ideal: linear variance reduction (trees correlated \( \rightarrow \) reduction still 
+        significant)
+    \item Bagging: less variance, bias unaffected \( \rightarrow \) use strong trees (high 
+        variance/low bias)
+    \item Random Forests: Also randomize considered variables at each splitting criterion, grow 
+        to maximum depth (loss of interpretability, good accuracy, less unstable)
+\end{itemize}
+
+\section{Dimensionality Reduction and Clustering}
+
+\begin{itemize}
+    \item Motivation: Invert \( \bm{X}^\top \bm{X} \) for linear regression: 
+        \( d \times d \rightarrow O ( d^3 ) \rightarrow \) find \( d_\mathrm{new} \ll d \) 
+    \item Find (linear) mapping \( \bm{x}_i \rightarrow \bm{z}_i \) to lower dimension with 
+        \( \bm{z}_i = \bm{W} \bm{x}_i \)
+    \item Orthonormal basis system: \( \bm{x} = \sum_i^D z_i \bm{u}_i \rightarrow z_i = 
+        \bm{u}_i^\top \bm{x} \rightarrow \) only use subset for dimensionality reduction 
+        (minimize squared reproduction error \( \sum || \bm{x}_i - \tilde{\bm{x}}_i ||^2 \))
+    \item Minimizing error \( \Leftrightarrow \) maximizing variance of projection (with zero 
+        mean data)
+    \item Principle component analysis: find principal directions \( \bm{u}_i \) and their 
+        variance \( \lambda_i \)
+    \item \( \bm{u}_1 = \mathrm{argmax}_u \frac{1}{N} \sum 
+        ( \bm{u}^\top ( \bm{x}_i - \bm{\mu} ) )^2 \; \mathrm{s. t.} \; \bm{u}^\top \bm{u} = 1 \), 
+        \( \bm{u}_2 \) maximizes variance in orthogonal complement of \( \bm{u}_1 \)
+    \item Objective can be written in terms of sample covariance: \( E ( \bm{u} ) = 
+        \bm{u}^\top \bm{\Sigma} \bm{u} \)
+    \item Constraint Optimization: Lagrangian Multipliers (\( L = 
+        \mathrm{objective} - \mathrm{multiplier} \cdot \mathrm{constraint} \)): 
+        \( \min_x x^2 \; \mathrm{s.t.} \; x \geq b \rightarrow 
+        \min_x \max_\alpha L ( x, \alpha ) = x^2 - \alpha ( x - b ) \; \mathrm{s.t.} \; 
+        \alpha \geq 0 \) (Min forces max to behave such that constraints are satisfied)
+    \item Dual formulation: \( \bm{\lambda}^* = \mathrm{argmax} \; g ( \bm{\lambda} ), \; 
+        g ( \bm{\lambda} ) = \min_x L ( x, \bm{\lambda} ) \; \mathrm{s.t.} \; 
+        \lambda_i \geq 0, \bm{x}^* = \mathrm{argmin}_x \; L ( \bm{x}, \bm{\lambda}^* ) \) (swap 
+        min/max)
+    \item Slaters condition: convex objective/constraints \( \Rightarrow \) dual 
+        \( \Leftrightarrow \) primal (original)
+    \item PCA: \( \bm{u}_1 = \mathrm{argmax}_u \; \bm{u}^\top \bm{\Sigma} \bm{u} 
+        \; \mathrm{s.t.} \; \bm{u}^\top \bm{u} = 1 \Rightarrow L ( \bm{u}, \lambda ) = 
+        \bm{u}^\top \bm{\Sigma} \bm{u} + \lambda ( \bm{u}^\top \bm{u} - 1 ) \Rightarrow 
+        \bm{\Sigma u} = \lambda \bm{u} \) (eigenvalue problem, largest value: maximum variance, 
+        vector: direction)
+    \item Representation has minimum MSE of all linear representations of same dimension
+    \item PCA: Subtract mean, (normalize variance of each dimension), choose first \( M \) 
+        largest eigenvalues/their vectors of \( \bm{\Sigma} \), \( \bm{z}_i = 
+        \bm{B}^\top ( \bm{x}_i - \bm{\mu} ) \), reprojection: \( \tilde{\bm{x}}_i = 
+        \bm{\mu} + \bm{B z}_i \)
+    \item Choose \( M \): based on application performance/based on captured variance
+    \item Applications: face detection, morphing, natural image patches, \dots
+    \item Clustering Group data using similarity measure (\(D ( A, B ) = D ( B, A ), \; 
+        D ( A, B ) = 0 \Leftrightarrow A = B, \; D ( A, B ) \leq D ( A, C ) + D ( B, C ) \))
+    \item Hierarchical Clustering: Dendrogram (similarity: height of lowest shared node)
+    \item Outlier: single isolated branch
+    \item Heurestic search of all possible trees: Bottom-up / Top-down (find best division)
+    \item Bottom-up: each sample in own cluster, merge closest two clusters, until single 
+        cluster left (requires distance measure for samples and clusters)
+    \item Cluster similarity: single linkage (minimum distance between two points) / complete 
+        linkage (maximum distance) / average linkage / centroid linkage
+    \item Hierarchical: any number of clusters, \( O ( n^2 ) \), local optima, subjective 
+        interpretation
+    \item Flat Clustering: K-Means: minimize quantization error (sum of squared distances) 
+        \( \mathrm{SSD} ( C, D ) = \sum d ( \bm{x}_i, c ( \bm{x}_i ) )^2 \)
+    \item Iteration: 1. pick \( K \) random centroids \( c_i \), 2. assign each point to 
+        closest \( c_i \), 3. move centroids to mean of assigned points, 4. go to step 2 until 
+        no change
+    \item \( \mathrm{SSD} = \sum_i \sum_k \delta_{ik} d ( \bm{x}_i, \bm{c}_k )^2 \rightarrow \) 
+        assigment minimizes w.r.t. \( \delta_{ik} \), adjustment w.r.t. \( \bm{c}_k \)
+    \item K-Means locally minimizes SSD (depends on intialization, global NP-hard)
+    \item K-Means++: first centroid random, each following centroid furthest from all others
+    \item Choose \( K \): objective function decrease on holdout set or Knee-finding method
+    \item Knee-finding: plot SSD for \( K \), pick point where decrease is no longer steep
+    \item K-Means: converges quickly, local optima, not applicable to categorical data/noisy 
+        data/outliers, clusters must be convex
+\end{itemize}
+
+\section{Density Estimation and Expectation Maximization}
+
+\begin{itemize}
+    \item Non-parametric models (don't know form of class-conditional density) \( \rightarrow \) 
+        estimate directly from data (histograms, kernel density, KNN)
+    \item Histograms: general, need exponential data (curse of dimensionality), fixed region 
+        size, \( p ( \bm{x} ) \approx \frac{K}{N V} \) (\( K \) points in region \( R \), 
+        \( N \): total points, \( V \): volume of \( R \))
+    \item Center \( R \) on \( \bm{x} \): Kernel density: fix \( V \), determine \( K \), KNN: 
+        fix \( K \), determine \( V \)
+    \item Kernel Density Estimation: \( k ( \bm{x}, \bm{y} ) \): non-negative, 
+        distance-dependent: \( k ( \bm{x}, \bm{y} ) = g ( \bm{x} - \bm{y} ) \), 
+        \( V = \int g ( \bm{u} ) d \bm{u} \), \( K ( \bm{x}_* ) = 
+        \sum g ( \bm{x}_* - \bm{x}_i )  \rightarrow p ( \bm{x}_* ) \approx 
+        \frac{K ( \bm{x}_* )}{N V} \)
+    \item Parzen Window (hypercubes): \( g ( \bm{u} ) = 1 \; \mathrm{if} \; 
+        | u_j | \leq \frac{h}{2}, j = 1 \dots d, \; \mathrm{else} \; 
+        0 \Rightarrow p ( \bm{x}_* ) \approx \frac{K ( \bm{x}_* )}{N h^d} \), \( h \): 
+        bandwidth, \( d \): dimensionality (easy to compute, not very smooth)
+    \item Gaussian Kernel: \( g ( \bm{u} ) = \exp ( - \frac{|| \bm{u} ||^2}{2 h}) \rightarrow 
+        p ( \bm{x}_* ) \approx \frac{1}{N \sqrt{( 2 \pi h )^d}} 
+        \sum \exp ( - \frac{|| \bm{x}_* - \bm{x}_i ||^2}{2 h} ) \) (smooth, infinite support, 
+        computationaly intensive, bigger \( h \rightarrow \) smoother curve)
+    \item Cross-validation for bin size/bandwidth/neighbours (highest likelihood on test-set)
+    \item Mixture Models generality of non-parametric models and efficiency of parametric 
+        models \( \rightarrow \) create complex distribution by combining simple ones (e.g. 
+        Gaussians)
+    \item Mixture coefficient \( \cdot \) component: \( p ( \bm{x} ) = 
+        \sum p ( k ) p ( \bm{x} | k ) \sim \) any smooth density
+    \item \( p ( k ) = \pi_k \geq 0, \sum \pi_k = 1, p ( \bm{x} | k ) = 
+        N ( \bm{x} | \bm{\mu}_k, \bm{\Sigma}_k ), \bm{\theta} = 
+        \{ \pi_1, \bm{\mu}_1, \bm{\Sigma}_1, \dots, \pi_K, \bm{\mu}_K, \bm{\Sigma}_K \} \)
+    \item Gradient descent on marginal log-likelihood? \( \rightarrow \) possible, inefficient 
+        (depends on all components, no closed form, slow convergence, sum does not go well with 
+        log)
+    \item Mixture models \( \rightarrow \) latent variable models (observed variables 
+        \( \bm{x} \) and latent variables \( \bm{z} \)): 
+        \( p ( \bm{x}, \bm{z} | \bm{\theta} ) \) (parametric model), 
+        \( p( \bm{x} | \bm{\theta} ) = \sum_z p ( \bm{x}, z | \bm{\theta} ) \) (marginal 
+        distribution)
+    \item Kullback-Leibler Divergence (similarity of distributions): 
+        \( \mathrm{KL} ( q || p ) = \sum_x q ( \bm{x} ) 
+        \log \frac{q ( \bm{x} )}{p ( \bm{x} )} \) (non-negative, zero for same distribution, 
+        non-symmetric \( \rightarrow \) no distance metric)
+    \item Expectation-Maximization algorithm estimates latent variable models (iteratively 
+        increases lower bound of the marginal log-likelihood) \( \rightarrow \) local optima
+    \item \( \log p ( \bm{x} | \bm{\theta} ) = 
+        \sum_z q ( z ) \log \frac{p ( \bm{x}, z | \bm{\theta} )}{q ( z )} + \sum_z q ( z ) 
+        \log \frac{q ( z )}{p ( z | \bm{x} )} = 
+        L ( q, \bm{\theta} ) + \mathrm{KL} ( q ( z ) || p ( z | \bm{x} )) \) (decomposition 
+        holds for any \( q ( z ) \), it makes optimization much simpler)
+    \item \( L ( q, \bm{\theta} ) \leq \log p ( \bm{x} | \bm{\theta} ) \) contains joint 
+        distribution \( \rightarrow \) easier to optimize (often convex)
+    \item Expectation step: Find \( q ( z ) \) to minimize KL \( \rightarrow q ( z ) = 
+        p ( z | \bm{x}, \bm{\theta}_\mathrm{old} ) = 
+        \frac{p ( \bm{x}, z | \bm{\theta}_\mathrm{old} )}{\sum_z p ( \bm{x}, z | 
+        \bm{\theta}_\mathrm{old} )} \) (closed form for discrete \( z \)) 
+        \( \Rightarrow \mathrm{KL} = 0 \Rightarrow \) lower bound 
+        \( L ( q, \bm{\theta}_\mathrm{old} ) \) tight at \( \bm{\theta}_\mathrm{old} \)
+    \item Maximization step: Maximize \( L ( q, \bm{\theta} ) \): \( \bm{\theta}_\mathrm{new} = 
+        \mathrm{argmax} \sum_z q ( z ) \log p ( \bm{x}, z | \bm{\theta} ) + \mathrm{const} \)
+    \item Full dataset: \( L ( q, \bm{\theta} ) = 
+        \sum_i ( \sum_k q_{ik} \log p ( \bm{x}_i, k | \bm{\theta} ) - 
+        \sum_k q_{ik} \log q_{ik} ) \) with \( q_{ik} = q_i ( z = k ) \) (one latent variable 
+        per data-point)
+    \item Gaussian mixture models E-step: Compute ``responsibilities'' of components: 
+        \( q_{ik} = \frac{\pi_k N ( \bm{x}_i | \bm{\mu}_k, \bm{\Sigma}_k )}{\sum_j \pi_j N 
+        ( \bm{x}_i | \bm{\mu}_j, \bm{\Sigma}_j )} = p ( z = k | \bm{x}_i ) \)
+    \item M-step: Seperate updates for additive objectives: \( \bm{\pi} = 
+        \mathrm{argmax} \sum_i \sum_k q_{ik} \log \pi_k \), \( \bm{\mu}_k, \bm{\Sigma}_k = 
+        \mathrm{argmax} \sum_i q_{ik} \log N ( \bm{x}_i | \bm{\mu}_k, \bm{\Sigma}_k ) 
+        \rightarrow \) weighted ML estimation
+    \item \( \pi_k = \frac{\sum_i q_{ik}}{N} \), \( \bm{\mu}_k = 
+        \frac{\sum_i q_{ik} \bm{x}_i}{\sum_i q_{ik}} \), \( \bm{\Sigma}_k = 
+        \frac{\sum_i q_{ik} ( \bm{x}_i - \bm{\mu}_k ) ( \bm{x}_i - \bm{\mu}_k )^\top}{\sum_i 
+        q_{ik}} \)
+    \item EM for GMMs: Initialize (K-Means for component means and fixed covariance), until 
+        convergence: E-step (responsibilities \( q_{ik} \)), M-step (update \( \bm{\pi} \), 
+        \( \bm{\mu}_k \), \( \bm{\Sigma}_k \))
+    \item EM very sensitive to intialization, K-Means special case of EM
+    \item More components \( \rightarrow \) better likelihood (beware of overfitting)
+    \item EM for dimensionality reduction (probabilistic PCA): \( \bm{x} = 
+        \bm{W z} + \bm{\mu} + \bm{\varepsilon} \), (latent variable \( \bm{z} \): low 
+        dimensional representation, \( \bm{\mu} \): constant offset, 
+        \( \bm{\varepsilon} \sim N ( 0, \sigma^2 \bm{I} ) \): noise)
+    \item Continuous latent variable: \( p ( \bm{z} ) = N ( \bm{0}, \bm{I} ) \), observation 
+        model \( p ( \bm{x} | \bm{z}, \bm{\theta} ) = 
+        N ( \bm{W z} + \bm{\mu}, \sigma^2 \bm{I} ) \) with parameters \( \bm{\theta} = 
+        \{ \bm{W}, \bm{\mu}, \sigma^2 \} \)
+    \item Generative process: sample \( \bm{z} \sim N ( \bm{0}, \bm{I} ) \), project: 
+        \( \bm{y} = \bm{W z} + \bm{\mu} \), add noise: \( \bm{x} = \bm{y} + \bm{\varepsilon} \)
+    \item Maximize marginal \( \mathrm{loglike} ( \bm{\theta} ) = 
+        \sum_i \log ( \int_z N ( \bm{x} | \bm{W z } + \bm{\mu}, \sigma^2 \bm{I} ) 
+        N ( \bm{z} | \bm{0}, \bm{I} ) d \bm{z} ) \rightarrow \) EM
+    \item E-step: Posterior \( q_i ( \bm{z} ) = p ( \bm{z} | \bm{x}_i, \bm{\theta} ) \) with 
+        \( \bm{\mu}_{z | x_i} = ( \bm{W}^\top \bm{W} + \sigma^2 \bm{I} )^{- 1} \bm{W}^\top 
+        ( \bm{x}_i - \bm{\mu} ), \bm{\Sigma}_{z | x_i} = 
+        \sigma^2 ( \bm{W}^\top \bm{W} + \sigma^2 \bm{I} )^{- 1} \) (only possible because 
+        \( \bm{x} \) is linear in \( \bm{z} \))
+    \item M-step: \( L ( q, \bm{\theta} ) = 
+        \sum_i \mathbb{E}_{q_i ( z )} [ \log p( \bm{x}_i | \bm{z}, \bm{\theta} ) ] + 
+        \mathrm{const} \approx \sum_i \log p ( \bm{x}_i | \bm{z}_i, \bm{\theta} ) \) with 
+        \( \bm{z}_i \sim q_i ( \bm{z} ) \) (approximate with single sample per \( \bm{x}_i \)) \( \rightarrow \) 
+        solution: standard least squares: \( \begin{bmatrix}
+            \bm{\mu} \\
+            \bm{W}
+        \end{bmatrix} = ( \bm{Z}^\top \bm{Z} )^{- 1} \bm{Z}^\top \bm{X}, \sigma^2 = 
+        \frac{1}{n d} \sum_i^n \sum_k^d ( y_{ik} - x_{ik} )^2 \)
+    \item PCA with eigenvectors preferred (one step \( \rightarrow \) very fast), probabilistic 
+        PCA provides density, helps understand EM and more complex dimensionality reduction 
+        methods
+    \item EM: assumes KL can be zero (posterior can be evaluated analytically), \( \bm{z} \) 
+        must be discrete/linear gaussian \( \rightarrow \) Variational Bayes/Inference can work 
+        with KL \( > 0 \)
+\end{itemize}
+
+\section{Kernel Methods}
+
+\begin{itemize}
+    \item Kernel: represent \( \{ \bm{x}_1, \dots, \bm{x}_n \} \) by \( [ \bm{K} ]_{ij} = 
+        k ( \bm{x}_i, \bm{x}_j ) \) (\(k : X \times X \rightarrow \mathbb{R} \): comparison)
+    \item Modularity between choice of \( k \) and algorithm, poor scalability
+    \item Positive definite kernel function \( k \): symmetric, \( \bm{K}\) is always positive 
+        definite
+    \item \( k ( \bm{x}, \bm{x}' ) = \langle \phi ( \bm{x} ), \phi ( \bm{x}' ) \rangle \): 
+        positive definite kernel (arbitrary feature function \( \phi \))
+    \item Theorem: positive definite (p.d.) kernel \( \Leftrightarrow \) associated feature 
+        space
+    \item Kernel for polynomial features of degree \( d \): \( k ( \bm{x}, \bm{x}' ) = 
+        \langle \bm{x}, \bm{x}' \rangle^d \)
+    \item Gaussian kernel: \( k ( \bm{x}, \bm{y} ) = 
+        \exp ( - \frac{|| \bm{x} - \bm{y} ||^2}{2 \sigma^2} ) \) with bandwidth \( \sigma \) 
+        (most used kernel)
+    \item Gaussian kernel is inner product of two infinite dimensional feature vectors 
+        \( \rightarrow \) p.d.
+    \item Kernel trick: feature based algorithms can use infinite dimensional feature space if 
+        rewritten to contain inner products of feature vectors \( \rightarrow \) better than 
+        linear features
+    \item Kernel ridge regression: \( \bm{w}^* = 
+        ( \bm{\Phi}^\top \bm{\Phi} + \lambda \bm{I} )^{- 1} \bm{\Phi}^\top \bm{y} = 
+        \bm{\Phi}^\top ( \bm{\Phi} \bm{\Phi}^\top + \lambda \bm{I} )^{- 1} \bm{y} \rightarrow 
+        d \times d \) matrix inversion (infinite) to \( N \times N \) matrix inversion 
+        (\( \bm{K} \), by using matrix identity)
+    \item \( \bm{w}^* \) still \( d \)-dimensional, but can evaluate \( f ( \bm{x} ) = 
+        \phi ( \bm{x} )^\top \bm{w}^* = 
+        \bm{k} ( \bm{x} )^\top ( \bm{K} + \lambda \bm{I} )^{- 1} \bm{y} = 
+        \sum_i \alpha_i k ( \bm{x}_i, \bm{x} ) \) with \( \bm{\alpha} = 
+        ( \bm{K} + \lambda \bm{I} )^{- 1} \bm{y} \)
+    \item Comparison to linear regression with gaussian features: kernel allows setting 
+        centers adaptively (fixed without kernel trick)
+    \item Choose hyper-parameter bandwidth via cross-validation
+    \item Kernel methods (ridge regression, gaussian processes, SVMs): must store all samples, 
+        high computation, flexible representation, good for small data, hard to scale 
+\end{itemize}
+
+\section{Support Vector Machines}
+
+\begin{itemize}
+    \item Classification: class labels 1 and -1 for SVMs (\(f ( \bm{x}_i ) y_i > 0 \))
+    \item Scalar projection of \( \bm{a} \) on \( \bm{b} \): \( a_b = 
+        \frac{\bm{a}^\top \bm{b}}{|| \bm{b} ||} \)
+    \item Support vectors: data points closest to decision boundary (other samples ignored), 
+        maximize margin \( \rho \)
+    \item Maximum margin classifier has smaller complexity \( \Rightarrow \) generalizes better
+    \item Distance between point \( \bm{x}_i \) and line: \( r = 
+        \frac{\bm{w}^\top \bm{x}_i + b}{|| \bm{w} ||} \)
+    \item Choose scaling for \( \bm{w}, b \) so that \( \bm{w}^\top \bm{x}_+ + b = 1 \) 
+        (positive support vector), \( \bm{w}^\top \bm{x}_- + b = -1 \) (negative support 
+        vector) \( \rightarrow \rho = \frac{2}{|| \bm{w} ||} \)
+    \item Optimization problem: \( \mathrm{argmax}_w \frac{2}{|| \bm{w} ||} \) s.t. 
+        \( \bm{w}^\top \bm{x}_i + b \geq 1 \; \mathrm{if} \; y_i = 
+        1, \leq - 1 \; \mathrm{if} \; y_i = - 1 \) (one positive + negative point satisfy 
+        equality, otherwise weight could be reduced)
+    \item Reformulation: \( \mathrm{argmin}_w || \bm{w} ||^2, \; \mathrm{s.t.} \; 
+        y_i ( \bm{w}^\top \bm{x}_i + b ) \geq 1 \) (convex, single optimum)
+    \item Choose trade-off between margin and accuracy (for outliers) \( \rightarrow \) 
+        slack-variables \( \xi_i \geq 0 \) allow violation of margin: 
+        \( y_i ( \bm{w}^\top \bm{x}_i + b ) \geq 1 - \xi_i \Rightarrow 
+        \mathrm{argmin}_{w, \xi} || w ||^2 + C \sum \xi_i \) (\( C \): inverse regularization, 
+        small \( \rightarrow \) large \( \rho \), large \( \rightarrow \) small \( \rho \), 
+        infinite \( \rightarrow \) hard \( \rho\))
+    \item Reformulated as unconstrained optimization: 
+        \( \mathrm{argmin}_w \; || \bm{w} ||^2 + C \sum_i \max ( 0, 1 - y_i f ( \bm{x}_i )) = 
+        \mathrm{regularization} \; + \; \mathrm{hinge} \; \mathrm{loss} \rightarrow \) convex, one minimum, but 
+        not differentiable \( \rightarrow \) similar to logistic regression loss
+    \item Hinge loss: \( \max \{ 0, 1 - y_i f ( \bm{x}_i ) \} \) / Logistic loss: 
+        \( \log ( 1 + \exp ( - y_i f ( \bm{x}_i ) ) ) \rightarrow y_i f ( \bm{x}_i ) \) 
+        should be large for both / saturates if it gets too large
+    \item Sub-gradient: Any \( \bm{g} \) at point \( \bm{x} \) so that 
+        \( f ( \bm{z} ) \geq f ( \bm{x} ) + \bm{g}^\top ( \bm{z} - \bm{x} ) \), if \( f \) is 
+        differentiable at \( \bm{x} \Rightarrow \bm{g} = \nabla f ( \bm{x} ) \) 
+    \item Let \( f ( x ) = \max \{ f_1 ( x ), f_2 ( x ) \} \). \( f_1 ( x ) = 
+        f_2 ( x ) \Rightarrow g \in [ \nabla f_1 ( x ), \nabla f_2 ( x ) ] \)
+    \item Sub-gradient descent: \( \bm{x}_{t + 1} = \bm{x}_t + \eta \bm{g} \) (does not always 
+        decrease \( f \), store best \( \bm{x}^* \)) SVMs: each iteration, pick random 
+        \( ( \bm{x}_i, y_i ) \). \( y_i f ( \bm{x}_i ) < 1 : \bm{w}_{t + 1} = 
+        \bm{w}_t - \eta ( 2 \bm{w}_t - C y_i \bm{x}_i ) \), otherwise \( \bm{w}_{t + 1} = 
+        \bm{w}_t - \eta 2 \bm{w}_t \)
+    \item SVM: classification standard in 90s/00s (pedestrian detection, text categorization, 
+        character recognition, bioinformatics), extends to regression, outperformed by NNs
+    \item Kernel SVM: Dual derivation: \( \bm{w}^* = \sum_i \lambda_i y_i \phi ( \bm{x}_i ) \) 
+        (\( \lambda_i \): constraint coefficient)
+    \item \( \frac{\partial L}{\partial b} = - \sum_i \lambda_i y_i \Rightarrow 
+        \sum_i \lambda_i y_i = 0 \) no solution for \( b \), but additional condition 
+        (\( b \) can be computed from \( \bm{w} \): \( b = 
+        y_i - \bm{w}^\top \phi ( \bm{x}_i ) \) (for \( \bm{x}_i \) on margin))
+    \item Kernel trick for SVMs: \( g ( \bm{\lambda} ) = 
+        \sum \lambda_i - \frac{1}{2} \sum_i \sum_j \lambda_i \lambda_j y_i y_j 
+        \bm{k} ( \bm{x}_i, \bm{x}_j ) \)
+    \item Dual optimization (slack variables): \( \max_\lambda \sum \lambda_i - \frac{1}{2} 
+        \sum_i \sum_j \lambda_i \lambda_j y_i y_j \bm{k} ( \bm{x}_i, \bm{x}_j ) 
+        \; \mathrm{s.t.} \; C \geq \lambda_i \geq 0, \; \sum \lambda_i y_i = 0 \) with 
+        \( b = y_k - \sum_i y_i \lambda_i k ( \bm{x}_i, \bm{x}_k ) \) where 
+        \( C > \lambda_k > 0 \) and \( f ( \bm{x} ) = 
+        \sum_i y_i \lambda_i k ( \bm{x}_i, \bm{x} ) + b \) (upper bound \( C \) limits 
+        \( \lambda_i \) so misclassifcations allowed)
+    \item Control overfitting: set \( C \) (low \( C \rightarrow \) low complexity), choose 
+        kernel, vary bandwidth
+\end{itemize}
+
+\section{Bayesian Machine Learning}
+
+\begin{itemize}
+    \item Estimate \( \bm{\theta}^* \) uncertainty, infinite predictors (mean) 
+        \( \rightarrow \) give prediction uncertainty
+    \item Compute posterior \( p ( \bm{\theta} | D ) = 
+        \frac{p ( D | \bm{\theta} ) p ( \bm{\theta} )}{p ( D )} \), 
+        \( p ( D | \bm{\theta} ) \): data likelihood, \( p ( \bm{\theta} ) \): prior 
+        (subjective belief), \( p ( D ) \): evidence (normalization, later used for model 
+        comparison)
+    \item Compute predictive distribution (marginal likelihood) \( p ( \bm{x}^* | D ) = 
+        \int p ( \bm{x}^* | \bm{\theta} ) p ( \bm{\theta} | D ) d \bm{\theta} \), 
+        \( p ( \bm{x}^* | \bm{\theta} ) \): likelihood (weighted ensemble method, often uses 
+        samples of \( p ( \bm{\theta} | D ) \))
+    \item Prior should express belief and domain knowledge \( \xrightarrow{\mathrm{ML}} \) 
+        weights should be small \( \rightarrow p ( \bm{\theta} ) = 
+        N ( \bm{\theta} | \bm{0}, \lambda^{- 1} \bm{I} ) \) , \( \lambda \): precision of the 
+        prior
+    \item Completing the square: Bring exponent in canonical squared form: 
+        \( \exp ( - \frac{1}{2} a \mu^2 + b \mu + \mathrm{const} ) \rightarrow \) for gaussian 
+        distributions: \( \mu_N = a^{- 1} b, \; \sigma^2_N = a^{- 1} \)
+    \item Posterior if prior/likelihood are gaussian: \( \mu_N = 
+        \frac{N \sigma_0^2}{N \sigma_0^2 + \sigma^2} \mu_{\mathrm{ML}} + 
+        \frac{\sigma^2}{N \sigma_0^2 + \sigma^2} \mu_0 \) and \( \sigma_N^2 = 
+        \frac{\sigma^2 \sigma_0^2}{N \sigma_0^2 + \sigma^2} \) with \( \mu_{\mathrm{ML}} = 
+        \frac{\sum x_i}{N} \) and \( \mu_0, \sigma_0 \) from prior (variance decreases with 
+        more training samples, posterior interpolates between prior mean/sample average)
+    \item Gaussian Propagation: predictive distribution is gaussian with \( \mu_{x^*} = \mu_N \) and 
+        \( \sigma_{x^*}^2 = \sigma_N^2 + \sigma^2 \)
+    \item Conjugate prior for likelihood function \( \Leftrightarrow \) posterior/prior: 
+        same distribution family
+    \item Bayesian Learning: For large datasets: point estimate, advantage for small dataset
+    \item Simplification: Maximum a-posteriori solution: \( \bm{\theta}_\mathrm{MAP} = 
+        \mathrm{argmax} \log p ( D | \bm{\theta} ) + \log p ( \bm{\theta} ) \) maximizes 
+        posterior \( \rightarrow \) use for prediction: \( p ( \bm{x}^* | D ) \approx 
+        p ( \bm{x}^* | \bm{\theta}_\mathrm{MAP} ) \)
+    \item MAP regression: gaussian prior \( \leftrightarrow \) L2; gaussian likelihood 
+        \( \leftrightarrow \) squared loss \( \Leftrightarrow \) ridge regression 
+        (\( \lambda_\mathrm{ridge} = \lambda \sigma^2 \), uncertainty only depends on estimated 
+        noise \( \sigma^2 \))
+    \item Bayesian linear regression: likelihood: \( p ( \bm{y} | \bm{X}, \bm{w} ) = 
+        N ( \bm{y} | \bm{\Phi w}, \sigma^2 \bm{I} ) \) (multivariate distribution, 
+        \( \sigma^2 \): noise variance), prior: \( p ( \bm{w} ) = 
+        N ( \bm{w} | \bm{0}, \lambda^{- 1} \bm{I} ) \)
+    \item Gaussian Bayes Rule 1/2 for evaluating \( p ( \bm{x} | \bm{y} ) \) (different derivations of posterior distribution): rule 1 if 
+        \( \dim ( \bm{y} ) < \dim ( \bm{x} ) \) (infinite dimensional features), otherwise rule 
+        2
+    \item Gaussian Propagation to evaluate \( p ( \bm{y} ) \)
+    \item Posterior/predictive mean equivalent to MAP estimate, but we get uncertainty for 
+        parameters: \( \bm{\Sigma}_{w | X, y} = 
+        \sigma_y^2 ( \bm{\Phi}^\top \bm{\Phi} + \sigma_y^2 \lambda \bm{I} )^{- 1} \) and 
+        variance \( \sigma^2 ( \bm{x}^* ) \) is input dependent
+    \item Compute predictive distribution with gaussian propagation
+    \item Gaussian Process: distribution over functions \( f ( \bm{x} ) \) so that any set
+        \( \bm{t} \) of function values evaluated at \( \bm{x}_1, \dots, \bm{x}_n \) is 
+        jointly gaussian distributed: \( f ( \bm{x} ) \sim GP ( m ( \bm{x} ), 
+        k ( \bm{x}, \bm{x}' ) ) \), \( m ( \bm{x} ) = \mathbb{E} [ f ( \bm{x} ) ] \): mean  
+        (prior belief about function, zero for simplicity), \( k ( \bm{x}, \bm{x}' ) = 
+        \mathbb{E} [ f ( \bm{x} ) f ( \bm{x}' ) ] \): positive definite correlation of 
+        function evaluations at \( \bm{x}, \bm{x}' \)
+    \item \( p ( \bm{t} | \bm{X} ) = N ( \bm{t} | \bm{0}, \bm{K} ) 
+        \xrightarrow{\mathrm{noise}} p ( \bm{y} | \bm{X} ) = 
+        N ( \bm{y} | \bm{0}, \bm{K} + \sigma_y^2 \bm{I} ) \) (\( y_i = 
+        f ( \bm{x}_i ) + \varepsilon \))
+    \item Predictive: \( \mu ( \bm{x}^* ) = 
+        \bm{k} ( \bm{x}^* )^\top ( \bm{K} + \sigma_y^2 \bm{I} )^{- 1} \bm{y} \), 
+        \( \sigma ( \bm{x}^* ) = k ( \bm{x}^*, \bm{x}^* ) + \sigma_y - 
+        \bm{k} ( \bm{x}^* )^\top ( \bm{K} + \sigma_y^2 \bm{I} )^{- 1} \bm{k} ( \bm{x}^* ) \) 
+        (mean \( \leftrightarrow \) kernel ridge regression + input dependent variance 
+        estimate (small for high kernel activations)) \( \rightarrow \) kernel-version of 
+        bayesian linear regression
+    \item Weight space view: Bayesian: subsume prior precision \( \lambda \) into kernel (vector/matrix): 
+        \( \bm{K} = \lambda^{- 1} \bm{\Phi}_X \bm{\Phi}_X^\top \)
+    \item Function view (from Gaussian process) vs. weight space view (from Bayesian Linear 
+        Regression with kernel trick)
+    \item Posterior derived from Bayesian view (rule 1): \( \bm{\mu}_{w | X, y}, 
+        \bm{\Sigma}_{w | X, y} \) (potentially infinite dimensions) \( \rightarrow \) can 
+        evaluate predictive distribution with kernel trick (same as \( GP \))
+    \item GP: computationally hard (\( O ( N^3 ) \)), very principled approach to regression 
+        learning
+    \item Kernel parameters: weight precision \( \lambda \), observation noise \( \sigma_y \), 
+        length scale \( l \) (can be different per dimension): Gaussian Kernel: 
+        \( k ( \bm{x}_i, \bm{x}_j ) = 
+        \lambda^{- 1} \exp ( - \frac{|| \bm{x}_i - \bm{x}_j ||}{2 l^2} ) + 
+        \delta_{ij} \sigma_y^2 \)
+    \item Optimization: non-convex log-likelihood of data \( \rightarrow \) gradient descent 
+        (overfitting)
+    \item GP: non-parametric Bayesian approach, prediction equations in closed form 
+        (gaussian), hyperparameter optimization complex, outperforms NNs for small datasets
+\end{itemize}
+
+\section{Neural Networks}
+
+\begin{itemize}
+    \item Artificial neuron: \( y = \phi ( \bm{w}^\top \bm{x} + b) \) (like logistic regression)
+    \item Feedforward network: directed acyclic graph (units grouped into layers)
+    \item Fully connected layer (\( N \) inputs to \( M \) outputs): \( \bm{y} = 
+        \phi ( \bm{W x} + \bm{b} ), \; \bm{W} \in \mathbb{R}^{M \times N} \)
+    \item Activations: \( \sigma \) (0 to 1, kills gradient, not zero-centered (important for 
+        initialization), \( \exp \) computationally hard), tanh (-1 to 1, zero centered, 
+        kills gradient), ReLU (fast computation/convergence, not zero centered, \( x < 0 \): 
+        no gradient), leaky ReLU (fast), ELU (\( \alpha ( e^x - 1 ) \; \mathrm{for} \; 
+        x < 0 \), benefits of ReLU, closer to zero mean, \( \exp \) hard)
+    \item Each layer computes function: \( \bm{y} = f^L \circ \dots \circ f^1 ( \bm{x} ) \) 
+        (composite of functions)
+    \item XOR: classic example why multiple layers are needed
+    \item Linear layers \( \Leftrightarrow \) one linear layer \( \rightarrow \) need 
+        non-linearities \( \rightarrow \) FF-NNs can approximate any function (theoretically 
+        with single layer, but exponential number of units)
+    \item Deterministic regression: \( \bm{f} = 
+        \bm{W}^{( L )} \bm{h}^{( L - 1 )} + \bm{b}^{( L )}, \; l_i ( \bm{x}_i, \bm{\theta} ) = 
+        \) squared loss / Probabilistic: \( p ( \bm{y} | \bm{x} ) = 
+        N ( \bm{y} | \bm{W}^{( L )} \bm{h}^{( L - 1 )} + \bm{b}^{( L )}, \bm{\Sigma} ), 
+        \; l_i ( \bm{x}_i, \bm{\theta} ) = - \log N ( \bm{y}_i | \bm{\mu} ( \bm{x}_i ), 
+        \bm{\Sigma} ( \bm{x}_i ) ) \)
+    \item Deterministic classification: \( f = \bm{W}^{( L )} \bm{h}^{( L - 1 )} + b^{( L )}, 
+        \; l_i ( \bm{x}_i, \bm{\theta} ) = \) hinge loss / Probabilistic: \( f = 
+        \sigma ( \bm{W}^{( L )} \bm{h}^{( L - 1 )} + b^{( L )} ), \; l_i ( \bm{x}_i, 
+        \bm{\theta} ) = - c_i \log f ( \bm{x}_i ) - ( 1 - c_i ) \log ( 1 - f ( \bm{x}_i ) ) \)
+    \item Deterministic multi-class: \( \bm{f} = 
+        \bm{W}^{( L )} \bm{h}^{( L - 1 )} + \bm{b}^{( L )} \), loss not covered / 
+        Probabilistic: \( \bm{f} = \mathrm{softmax} ( \bm{W}^{( L )} \bm{h}^{( L - 1 )} + 
+        \bm{b}^{( L )} ), \; l_i ( \bm{x}_i, \bm{\theta} ) = 
+        - \sum_k \bm{h}_{c_i, k} \log f_k ( \bm{x}_i ) \)
+    \item NNs learn features that can be seperated linearly by last layer
+    \item Back-propagation learning algorithm: Compute 
+        \( \frac{\partial L}{\partial \bm{W}^{( l )}}, 
+        \frac{\partial L}{\partial \bm{b}^{( l )}} \) recursively (chain rule)
+    \item Computation graph: node: input, edge: node computed as function of other node
+    \item Forward pass: compute loss / backward pass: compute derivatives
+    \item Notation: \( \overline{y} = \frac{\partial L}{\partial y} \) (error signals)
+    \item Multivariate chain rule: \( \frac{\partial}{\partial t} f ( x ( t ), y ( t ) ) = 
+        \frac{\partial f}{\partial x} \frac{\partial x}{\partial t} + 
+        \frac{\partial f}{\partial y} \frac{\partial y}{\partial t} = 
+        \overline{x} \frac{\partial x}{\partial t} + 
+        \overline{y} \frac{\partial y}{\partial t}  = \overline{t} \rightarrow \) in vector 
+        notation: \( \frac{\partial}{\partial t} f ( \bm{x} ( t ) ) = 
+        \frac{\partial f}{\partial \bm{x}}^\top \frac{\partial \bm{x}}{\partial t} \)
+    \item Backpropagation (\( v_1, \dots, v_N \) in topological order): \( \forall i \): Compute 
+        \( v_i \) as a function of \( \mathrm{Pa} ( v_i ) \) (forward pass) 
+        \( \rightarrow \overline{v_N} = 1 \rightarrow \forall i \; : \; \overline{v_i} = 
+        \sum_{j \in \mathrm{Ch} ( v_i )} \overline{v_j} \frac{\partial v_j}{\partial v_i} \) 
+        (backward pass)
+    \item Chain rule for matrix-vector products: \( \nabla_W f = 
+        \frac{\partial f ( \bm{z} )}{\partial \bm{W}} = 
+        \frac{\partial f ( \bm{z} )}{\partial \bm{z}} \frac{\partial}{\partial \bm{W}} 
+        ( \bm{W x} + \bm{b} ) = \frac{\partial f ( \bm{z} )}{\partial \bm{z}} \bm{x}^\top \) 
+        (\( \bm{z} = \bm{W x} + \bm{b} \))
+    \item Forward: one add-multiply operation per weight / backward: two times forward 
+        (cost linear in number layers, quadratic in units per layer)
+    \item Backprop neurally implausible (biological alternatives much slower on computers)
+    \item Problems with standard SGD: slow along shallow dimension, jitter along steep 
+        dimension; stuck in local minima; noisy loss function due to mini-batches
+    \item Momentum term (running gradient average): \( \bm{m}_{k + 1} = 
+        \gamma_k \bm{m}_k + ( 1 - \gamma_k ) \nabla L \) / Geometric Average: 
+        \( \bm{m}_k = ( 1 - \gamma ) \sum_i \gamma^{k - i} \bm{g}_i \)
+    \item Gradient normalization (RMSProp): large steps in plateaus, small steps in steep 
+        areas: \( \bm{g}_k = \nabla_\theta L ( \bm{\theta}_k ), \; \bm{b}_{k + 1, i} = 
+        \gamma \bm{v}_{k, i} + ( 1 - \gamma ) \bm{g}_{k, i}^2, \bm{\theta}_{k + 1, i} = 
+        \bm{\theta}_{k, i} - \frac{\eta}{\sqrt{\bm{v}_{k + 1, i} + \varepsilon}} 
+        \bm{g}_{k, i} \) per dimension \( i \), \( \bm{v}_k \): average of gradient norms, 
+        \( \varepsilon \): prevent division by zero
+    \item Adam: adaptive momentum + normalization: \( \bm{\theta}_{k + 1, i} = 
+        \bm{\theta}_{k, i} - \frac{\eta c_2 ( k )}{\sqrt{c_1 ( k ) \bm{v}_{k + 1, i} + 
+        \varepsilon}} \bm{m}_{k + 1, i} \) (no convergence guarantee, underestimation at start 
+        fixed by \( c_i ( k ) = \frac{1}{1 - \gamma_i^k} \)
+    \item Learning rate decay: Reduce at fixed points / Cosine: \( \alpha_t = 
+        \frac{1}{2} \alpha_0 ( 1 + \cos ( \frac{t \pi}{T} ) ) \) / Linear \( \alpha_t = 
+        \alpha_0 ( 1 - \frac{t}{T} ) \) / Inverse root: \( \alpha_t = 
+        \frac{\alpha_0}{\sqrt{t}} \) (\( T \): total number of epochs)
+    \item First order optimization: step in direction of minimum of linear approximation / 
+        second order optimization: step to minimum of quadratic approximation
+    \item \( \bm{\theta}^* = \bm{\theta}_0 - \frac{1}{2} \bm{H}^{- 1} \bm{g} \) with Hessian 
+        \( H = \nabla_\theta^2 L ( \bm{\theta} ) \) (no hyperparameters, no learning rate, 
+        less iterations, inverse in \( O ( N^3 ) \), \( N \) is in the millions)
+    \item Solutions: quasi-Newton methods (BFGS, approximate Hessian over time) / Limited 
+        memory BFGS (does not store full \( \bm{H}^{- 1} \), works well in full batch) 
+        \( \rightarrow \) in practice use Adam or L-BFGS (only on full batch with small noise)
+    \item Regularization: model ensembles: train multiple models (or use snapshots of one 
+        during training), average their results
+    \item Dropout: randomly (often 50\%) set neurons to zero (in each forward pass) 
+        \( \rightarrow \) forces redundancy, can be interpreted as ensembles with shared 
+        parameters
+    \item Testing dropout: average over multiple dropout masks (ensemble view) / multiply 
+        each weight by dropout rate (expectation view)
+    \item Drop connect: drop neuron connections (training) / use all connections (testing)
+    \item Data preprocessing: initialization optimized for zero-mean unit variance data / 
+        PCA / whitening of low-d data (covariance matrix is \( \bm{I} \))
+    \item Classification loss less sensitive to small weight changes after normalization
+    \item Weight initialization: constant \( \rightarrow \) all gradients equal, no distinct 
+        features can be learned \( \rightarrow \) random initialization needed
+    \item Fixed variance \( \rightarrow \) activations go to zero/saturate over deep layers 
+        (no gradients)
+    \item Xavier intialization (\( \sigma_W = \frac{1}{\sqrt{D_{\mathrm{in}}}} \)): 
+        activations nicely scaled for all layers (for tanh) / For ReLU: \( \sigma_W = 
+        \frac{2}{\sqrt{D_{\mathrm{in}}}} \)
+    \item Practice tips 
+        \begin{enumerate}
+            \item Check initial loss (without L2 should be \( \log C \) for softmax with 
+                \( C \) classes)
+            \item Overfit small sample (get 100\% training accuracy, change architecture / 
+                \( \eta \))
+            \item Find \( \eta \) to strongly decrease loss in 100 iterations (full training 
+                data, small L2)
+            \item Grid search around \( \eta \) / L2 from previous step (train each for 1 to 
+                5 epochs)
+            \item Train best models from step 4 for longer (10 to 20 epochs) without 
+                \( \eta \) decay
+            \item Loss curves: plateau end \( \rightarrow \eta \) decay / plateau beginning 
+                \( \rightarrow \) bad initialization / plateau after \( \eta \) step decay 
+                \( \rightarrow \) decay later / validation accuracy going up \( \rightarrow \) 
+                train longer / validation accuracy going down \( \rightarrow \) 
+                regularize/more data / same training/validation accuracy \( \rightarrow \) 
+                train longer/bigger model
+        \end{enumerate}
+        \item NNs work very well, even though we have more parameters than training samples
+\end{itemize}
+
+\section{Convolutional and Recurrent Neural Networks}
+
+\begin{itemize}
+    \item Image inputs \( \rightarrow \) huge amount of weights with FC-layers
+    \item Close pixels more correlated \( \rightarrow \) use convolutions (slide filter over 
+        image)
+    \item Stack filters to obtain multi-channel output
+    \item Stride \( S \): step-size (\( > 1 \rightarrow \) down-sampling) / (zero)-padding 
+        \( P \): fill image borders
+    \item Convolutional Layer: \( W_1 \times H_1 \times D_1 
+        \rightarrow W_2 \times H_2 \times D_2 \) with \( W_2 = ( W_1 - F + 2 P ) / S + 1 \), 
+        \( H_2 = ( H_1 - F + 2 P ) / S + 1 \) and \( D_2 = K \): number of filters, \( F \): 
+        kernel size
+    \item (Max)-Pooling: smaller output dimension (applied to each channel with \( P = 0 \))
+    \item Convolutional network: Convolutional layers, activations, pooling, FC layers at end
+    \item Optimize deep models: residual block computes \( F ( x ) + x \rightarrow \) new 
+        layers do no harm with \( F ( x ) = 0 \) at beginning
+    \item Transfer learning (for small datasets): Convolutional layers are generic 
+        \( \rightarrow \) reuseable (only train last FC layer(s) and freeze rest)
+    \item AlexNet (2012): first use of ReLU, 8 layers (first CNN winner of ImageNet) / VGG 
+        (2014): more smaller filters (more non-linearities, fewer parameters, 19 layers) / 
+        ResNet (2015): very deep using residual connections (152 layers)
+    \item Recurrent NNs: one to many (image captioning) / many to one (sentiment) 
+        / many to many (translation, video classification) \( \rightarrow \) use old state as 
+        input
+    \item State \( \bm{h}_t = f_W ( \bm{h}_{t - 1}, \bm{x}_t ) = \tanh ( \bm{W}_{h h}  
+        \bm{h}_{t - 1} + \bm{W}_{x h} \bm{x}_t ) \), \( \bm{y}_t = \bm{W}_{h y} \bm{h}_t \)
+    \item Computational graph: unroll time steps \( \rightarrow \) network depth \( T \), 
+        reuse \( \bm{W} \) each step
+    \item Backpropagation through time (BPTT): forward/backward through entire sequence
+    \item Truncated BPTT: keep \( \bm{h} \), but only backpropagate for smaller number of steps
+    \item Image Captioning: \( \bm{h}_t = \tanh ( \bm{W}_{h h} \bm{h}_{t - 1} + \bm{W}_{x h} 
+        \bm{x}_t + \bm{W}_{i h} \bm{v} ) \) with \( \bm{x}: \) previous word, \( \bm{v}: \) 
+        last layer CNN 
+    \item \( \nabla \bm{h} \) depends on \( \bm{W} \): largest singular value \( > 1 \): 
+        exploding gradients \( \rightarrow \) scale gradient / largest singular value 
+        \( < 1 \): vanishing gradients \( \rightarrow \) different RNN architecture
+    \item Long-term short-term memory (LSTM): gated contribution of state/input (forget (erase 
+        cell), input (write), \( g \) (how much to write), output (how much to reveal))
+    \item LSTM: Backpropagation from \( c_t \) to \( c_{t - 1} \): only elementwise multiplication (uninterrupted gradient flow similar to ResNet)
+    \item Stack: layer 1 output sequence \( \rightarrow \) layer 2 input (only dropout non-recurrent edges)
+    \item Gated Recurrent Units: no explicit \( f \) gate, less parameters, similar performance
+\end{itemize}
+
+\section{Wrap-Up}
+
+
+
+\begin{tabular}{m{0.7em} c c c c c}
+    \rotatebox{90}{ Chapter } &
+        \makecell[l]{Classical \\ Supervised \\ Learning} & 
+        \makecell[l]{Classical \\ Unsupervised \\ Learning} & 
+        \makecell[l]{Kernel \\ Methods} & 
+        \makecell[l]{Bayesian \\ Learning} & 
+        \makecell[l]{Neural \\ Networks} \\
+    \hline
+    \rotatebox{90}{ Algorithms } & 
+        \makecell[l]{\textit{Regression}: \\ Linear, \\ Ridge, \\ KNN, \\ Trees, Forests \\ 
+        \textit{Classification}: \\ Logistic \\ Regression, \\ KNN, \\ Trees, Forests} & 
+        \makecell[l]{(p)PCA \\ Clustering: \\ Agglomerative, \\ K-Means, \\ EM for GMMs \\ 
+        Density \\ Estimation: \\ KDE, KNN, \\ Mixture Models} & 
+        \makecell[l]{Kernel \\ Regression, \\ SVMs} & 
+        \makecell[l]{Bayesian \\ Linear \\ Regression, \\ Gaussian \\ Processes} & 
+        \makecell[l]{FF-NNs, \\ Backprop, \\ CNNs, \\ LSTMs} \\
+    \hline
+    \rotatebox{90}{ Basics }  & 
+        \makecell[l]{Matrix and \\ Vector Calculus, \\ Probability \\ Theory, \\ MLE, \\ 
+        Gradient Descent} & 
+        \makecell[l]{Constraint \\ Optimization, \\ EM} & 
+        \makecell[l]{Sub-gradients, \\ Constraint \\ Optimization} & 
+        \makecell[l]{``Completing \\ the square'', \\ Gaussian \\ Conditioning} & 
+        \makecell[l]{Most of the \\ others} \\
+    \hline
+    \rotatebox{90}{ Representations } & 
+        \makecell[l]{Features, \\ Basis Functions, \\ Instances, \\ Trees} & 
+        \makecell[l]{Instances, \\ Linear \\ Projections, \\ Centroids, \\ Mixture Models} & 
+        \makecell[l]{Kernels} & 
+        \makecell[l]{Features, \\ Kernels} & 
+        \makecell[l]{NNs} \\
+    \hline
+    \rotatebox{90}{ Optimization } & 
+        \makecell[l]{Least-squares, \\ Gradient Descent} & 
+        \makecell[l]{Eigen-Value \\ Decomposition, \\ EM} & 
+        \makecell[l]{Sub-gradients, \\ Quadratic \\ Solver} & 
+        \makecell[l]{Computing the \\ Posterior} & 
+        \makecell[l]{Adam, \\ 2nd Order \\ Gradient, \\ Sub-gradients \\ (ReLU)} \\
+    \hline
+    \rotatebox{90}{ Loss } & 
+        \makecell[l]{MSE/SSE, \\ Gaussian \\ Log-Likelihood, \\ Binary Cross \\ Entropy, \\ 
+        Soft-Max \\ Likelihood} & 
+        \makecell[l]{Reproduction \\ Error, SSD, \\ Sum of \\ Discrepancies, \\ Marginal \\ 
+        Log-Likelihood} & 
+        \makecell[l]{Maximum \\ Margin, \\ Hinge Loss} & 
+        \makecell[l]{MAP, \\ Posterior \\ Approximation} & 
+        \makecell[l]{Most of the \\ others} \\
+\end{tabular}
+
+\end{document}

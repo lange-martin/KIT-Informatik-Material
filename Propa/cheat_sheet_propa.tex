@@ -1,0 +1,272 @@
+\documentclass[11pt]{scrartcl}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[ngerman]{babel}
+\usepackage{ulem}
+\usepackage{listings}
+\usepackage{bm}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{makecell}
+\title{Programmierparadigmen}
+\date{\vspace{-5ex}}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\begin{document}
+\maketitle
+
+\section{Haskell}
+
+\begin{itemize}
+    \item \texttt{abs :: Num a => a -> a}: absolute value of the number
+    \item \texttt{concat :: [[a]] -> [a]}: accepts a list of lists and concatenates them
+    \item \texttt{concatMap :: (a -> [b]) -> [a] -> [b]}: creates a list from a list 
+    generating function by application of this function on all elements in a list passed as 
+    the second argument
+    \item \texttt{div :: Integral a => a -> a -> a}: returns how many times the first number 
+    can be divided by the second one.
+    \item \texttt{drop :: Int -> [a] -> [a]}: creates a list without the given number of items 
+    from the beginning of the second argument.
+    \item \texttt{dropWhile :: (a -> Bool) -> [a] -> [a]}: it takes elements from the input 
+    list the moment when the condition fails for the first time till the end of the list
+    \item \texttt{elem :: Eq a => a -> [a] -> Bool}: true if the list contains the first 
+    argument
+    \item \texttt{filter :: (a -> Bool) -> [a] -> [a]}: returns a list constructed from 
+    members of a list (second argument) fulfilling a condition given by the first argument
+    \item \texttt{foldl :: (b -> a -> b) -> b -> [a] -> b}: it takes the second argument and 
+    the first item of the list and applies the function to them, then feeds the function with 
+    this result and the second argument and so on.
+    \item \texttt{foldr :: (a -> b -> b) -> b -> [a] -> b}: it takes the second argument and 
+    the last item of the list and applies the function, then it takes the penultimate item 
+    from the end and the result, and so on.
+    \item \texttt{fromInteger :: Num a => Integer -> a}: convert from Integer to Num instance
+    \item \texttt{head :: [a] -> a}: returns the first item of a list
+    \item \texttt{iterate :: (a -> a) -> a -> [a]}: creates an infinite list where the first 
+    item is calculated by applying the function on the second argument, the second item by 
+    applying the function on the previous result and so on.
+    \item \texttt{last :: [a] -> a}: returns the last item of a list
+    \item \texttt{length :: [a] -> Int}: returns the number of items in a list
+    \item \texttt{map :: (a -> b) -> [a] -> [b]}: returns a list constructed by applying a 
+    function (the first argument) to all items in a list passed as the second argument.
+    \item \texttt{max :: Ord a => a -> a -> a}: returns the larger of its two arguments
+    \item \texttt{maximum :: Ord a => [a] -> a}: returns the maximum value of the list
+    \item \texttt{min :: Ord a => a -> a -> a}: returns the smaller of its two arguments
+    \item \texttt{negate :: Num a => a -> a}: change the sign of the number
+    \item \texttt{null :: [a] -> Bool}: returns True if a list is empty, otherwise False
+    \item \texttt{repeat :: a -> [a]}: creates infinite list where all items are the 
+    first argument
+    \item \texttt{reverse :: [a] -> [a]}: creates new list from original with items in 
+    reverse order
+    \item \texttt{snd :: (a,b) -> b}: returns the second item in a tuple
+    \item \texttt{take :: Int -> [a] -> [a]}: creates a list. The first argument determines 
+    how many items should be taken from the list passed as the second argument.
+    \item \texttt{tail :: [a] -> [a]}: it accepts a list and returns the list without its first
+    item
+    \item \texttt{zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]}: output elements are 
+    calculated from function and elements of input lists occuring at same position
+    \item \texttt{(!!) :: [a] -> Int -> a}: list index operator
+    \item Example of \texttt{instance}: \texttt{instance Show a => Show (Exp a) where}
+\end{itemize}
+
+\section{Prolog}
+
+\begin{itemize}
+    \item \texttt{append(?List1, ?List2, ?List1AndList2)}: \texttt{List1AndList2} is the 
+    concatenation of \texttt{List1} and \texttt{List2}
+    \item \texttt{atom(@Term)}: True if \texttt{Term} is bound to an atom.
+    \item \texttt{delete(+List1, @Elem, -List2)}: Delete matching elements from a list. True 
+    when \texttt{List2} has all elements from \texttt{List1} except for those that 
+    unify with \texttt{Elem}.
+    \item \texttt{integer(@Term)}: True if \texttt{Term} is bound to an integer
+    \item \texttt{member(?Elem, ?List)}: true if \texttt{Elem} is a member of \texttt{List}.
+    \item \texttt{not(:Goal)}: True if \texttt{Goal} cannot be proven.
+
+\end{itemize}
+
+\section{Lambda}
+
+\begin{itemize}
+    \item Church-Zahlen: \( c_0 = \lambda s. \; \lambda z. \; z, \; 
+    c_1 = \lambda s. \; \lambda z. \; s \; z, \; c_2 = \lambda s. \; \lambda z. \; 
+    s \; ( s \; z ), \; \dots \)
+    \item \( \textrm{isZero} = \lambda n. \; n \; ( \lambda x. \; c_\textrm{false}) \; c_\textrm{true} \)
+    \item Nachfolgerfunktion: \( \textrm{succ} = \lambda n. \; \lambda s. \; \lambda z. \; 
+    s \; ( n \; s \; z ) \)
+    \item Addition: \( \textrm{plus} = \lambda m. \; \lambda n. \; \lambda s \; \lambda z. \; 
+    m \; s \; ( n \; s \; z ) \)
+    \item Multiplikation: \( \textrm{times} = \lambda m. \; \lambda n. \; \lambda s. \; 
+    n \; ( m \; s ) \)
+    \item Potenzieren: \( \textrm{exp} = \lambda m. \; \lambda n. \; n \; m \)
+    \item Boolean: \( \textrm{c}_\textrm{true} = \lambda t. \; \lambda f. \; t, \; 
+    \textrm{c}_\textrm{false} = \lambda t. \; \lambda f. \; f \)
+    \item Rekursionsoperator \( \textrm{Y} = \lambda f. \; ( \lambda x. \; f \; ( x \; x ) ) \; ( \lambda x. \; f \; ( x \; x ) ) \)    \item Normalreihenfolge: Reduziere linksten äußersten Redex
+    \item Call-by-name: Reduziere linkesten äußersten Redex (nicht falls von \( \lambda \) umgeben)
+    \item Call-by-value: Reduziere linksten Redex (nicht von \( \lambda \) umgeben, Argument ist Wert)
+\end{itemize}
+
+\section{Typinferenz}
+
+\subsection{Normale Regeln}
+
+\[
+    \textsc{Const} \; \dfrac{c \in \textrm{Const}}{\Gamma \vdash c \; : \; \tau_c} \qquad 
+    \textsc{Var} \; \dfrac{\Gamma ( x ) = \tau}{\Gamma \vdash x \; : \; \tau}
+\]
+
+\[
+    \textsc{Abs} \; \dfrac{\Gamma, \; x \; : \tau_1 \vdash t \; : \; \tau_2}{
+        \Gamma \vdash \lambda x. \; t \; : \; \tau_1 \rightarrow \tau_2} \qquad 
+        \textsc{App} \; \dfrac{\Gamma \vdash t_1 \; : \; \tau_2 \rightarrow \tau \quad 
+        \Gamma \vdash t_2 \; : \; \tau_2}{\Gamma \vdash t_1 \; t_2 \; : \; \tau}
+\]
+
+\subsection{Polymorphismus}
+
+\[
+    \textsc{Var} \; \dfrac{\Gamma ( x ) = \phi \quad \phi \succeq \tau}{\Gamma \vdash x \; 
+    : \; \tau} \qquad \textsc{Let} \; \dfrac{\Gamma \vdash t_1 \; : \; \tau_1 \quad 
+    \Gamma, \; x \; : \; \textrm{ta} ( \tau_1, \Gamma ) \vdash t_2 \; : \; \tau_2}{\Gamma 
+    \vdash \textrm{let} \; x = t_1  \; \textrm{in} \; t_2 \; : \; \tau_2}
+\]
+
+\subsection{Typinferenz für Let}
+
+\[
+    \dfrac{\Gamma \vdash t_1 \; : \; \alpha_i \quad 
+    \Gamma' \vdash t_2 \; : \; \alpha_j}{\Gamma 
+    \vdash \textrm{let} \; x = t_1  \; \textrm{in} \; t_2 \; : \; \alpha_k}
+\]
+
+\begin{itemize}
+    \item Sammle Constraints aus linkem Teilbaum in \( C_\textrm{let} \)
+    \item Berechne \( \sigma_\textrm{let} \) von \( C_\textrm{let} \)
+    \item Berechne \( \Gamma' := \sigma_\textrm{let} ( \Gamma ), \; x \; : \; 
+    \textrm{ta} ( \sigma_\textrm{let} ( \alpha_i ), \; \sigma_\textrm{let} ( \Gamma ) ) \).
+    \item Benutze \( \Gamma' \) in rechtem Teilbaum, sammle Constraints in \( C_\textrm{body} \)
+    \item Constraints: \( C_\textrm{let}' \; \cup \; C_\textrm{body} \; \cup \; 
+    \{ \alpha_j = \alpha_k \} \) (\( C_\textrm{let}' := \{ \alpha_n = 
+    \sigma_\textrm{let} ( \alpha_n ) \; | 
+    \; \sigma_\textrm{let} \textrm{ definiert für } \alpha_n \} \))
+\end{itemize}
+
+\subsection{Robinson-Algorithmus}
+
+\texttt{if C == } \( \emptyset \) \texttt{then [] \\
+else let} \( \{ \theta_\textrm{l} = \theta_\textrm{r} \} \; \cup \; C' = C \) \texttt{in} \\
+\mbox{\texttt{~~if}} \( \theta_\textrm{l} == \theta_\textrm{r} \) 
+\texttt{ then unify(}\( C' \)\texttt{)} \\
+\mbox{\texttt{~~else if}} \( \theta_\textrm{l} == \)\texttt{Y and Y} 
+\( \notin \textrm{FV} ( \theta_\textrm{r} ) \) \texttt{then unify([Y} \( \Rightarrow 
+\theta_\textrm{r} \)\texttt{]} \( C' \)\texttt{)} \( \circ \) \texttt{[Y} \( \Rightarrow 
+\theta_\textrm{r} \)\texttt{]} \\
+\mbox{\texttt{~~else if}} \( \theta_\textrm{r} == \)\texttt{Y and Y} 
+\( \notin \textrm{FV} ( \theta_\textrm{l} ) \) \texttt{then unify([Y} \( \Rightarrow 
+\theta_\textrm{l} \)\texttt{]} \( C' \)\texttt{)} \( \circ \) \texttt{[Y} \( \Rightarrow 
+\theta_\textrm{l} \)\texttt{]} \\
+\mbox{\texttt{~~else if}} \( \theta_\textrm{l} == f ( \theta_\textrm{l}^1, \dots, 
+\theta_\textrm{l}^n ) \) \texttt{and} \( \theta_\textrm{r} == f ( \theta_\textrm{r}^1, \dots, 
+\theta_\textrm{r}^n ) \) \\
+\mbox{\texttt{~~~~then unify(}}\( C' \; \cup \; \{ \theta_\textrm{l}^1 = \theta_\textrm{r}^1, 
+\dots, \theta_\textrm{l}^n = \theta_\textrm{r}^n \} \) \texttt{)} \\
+\mbox{\texttt{~~else fail}}
+
+\noindent
+Allgemeinster Unifikator: \( \sigma \) mgu, falls \( \forall \) Unifikator \( \gamma \; \exists \) Substitution \( \delta \). \( \gamma = \delta \circ \sigma \).
+
+\section{MPI}
+
+\begin{itemize}
+    \item Datatypes: \texttt{MPI\_INT}, \texttt{MPI\_CHAR}
+    \item \texttt{int MPI\_Allgather(const void *sendbuf, int sendcount, MPI\_Datatype sendtype,
+    void *recvbuf, int recvcount, MPI\_Datatype recvtype, MPI\_Comm comm)}: gathers data from 
+    all tasks and distribute the combined data to all tasks.
+    \item \texttt{int MPI\_Alltoall(const void *sendbuf, int sendcount, MPI\_Datatype sendtype,
+    void *recvbuf, int recvcount, MPI\_Datatype recvtype, MPI\_Comm comm)}: sends data from 
+    all to all processes.
+    \item \texttt{int MPI\_Comm\_rank(MPI\_Comm comm, int *rank)}: rank of caller in 
+    \texttt{comm}.
+    \item \texttt{int MPI\_Comm\_size(MPI\_Comm comm, int *size)}: number of processes in 
+    \texttt{comm}.
+    \item \texttt{int MPI\_Finalize(void)}: terminates MPI execution environment.
+    \item \texttt{int MPI\_Gather(const void *sendbuf, int sendcount, MPI\_Datatype sendtype,
+    void *recvbuf, int recvcount, MPI\_Datatype recvtype, int root, MPI\_Comm comm)}: gathers 
+    together values from a group of processes.
+    \item \texttt{int MPI\_Irecv(void *buf, int count, MPI\_Datatype datatype, int source,
+    int tag, MPI\_Comm comm, MPI\_Request *request)}: Begins nonblocking receive.
+    \item \texttt{int MPI\_Isend(const void *buf, int count, MPI\_Datatype datatype, int dest, 
+    int tag, MPI\_Comm comm, MPI\_Request *request)}: begins a nonblocking send.
+    \item \texttt{int MPI\_Recv(void *buf, int count, MPI\_Datatype datatype, int source, 
+    int tag, MPI\_Comm comm, MPI\_Status *status)}: Blocking receive for message.
+    \item \texttt{int MPI\_Reduce(const void *sendbuf, void *recvbuf, int count, MPI\_Datatype 
+    datatype, MPI\_Op op, int root, MPI\_Comm comm)}: reduces values on all processes to a 
+    single value (using operations such as \texttt{MPI\_SUM}, \texttt{MPI\_MAX} or 
+    \texttt{MPI\_MIN}).
+    \item \texttt{int MPI\_Send(const void *buf, int count, MPI\_Datatype datatype, int dest, 
+    int tag, MPI\_Comm comm)}: performs a blocking send.
+    \item \texttt{int MPI\_Scatter(const void *sendbuf, int sendcount, MPI\_Datatype sendtype, 
+    void *recvbuf, int recvcount, MPI\_Datatype recvtype, int root, MPI\_Comm comm)}: sends 
+    data from one process to all other processes in a communicator.
+\end{itemize}
+
+\section{Java}
+
+\begin{itemize}
+    \item \texttt{IntStream mapToInt(ToIntFunction<? super T> mapper)}: returns 
+    \texttt{IntStream} after applying function to elements
+    \item \texttt{ExecutorService::newSingleThreadExecutor()}
+    \item \texttt{ExecutorService::newFixedThreadPool(int n)}
+    \item \texttt{ExecutorService::newCachedThreadPool()}
+    \item \texttt{ExecutorService::execute(Runnable runnable)}
+    \item \texttt{ExecutorService::shutdown()}
+    \item \texttt{Future<String> future = exeService.submit(() -> { return "Hi"; });}
+    \item \texttt{String s = future.get();}
+    \item Coffman conditions: mutual exclusion, hold and wait, no preemption, circular wait
+    \item Amdahl's Law: \( S ( n ) = \dfrac{1}{( 1 - p ) + \frac{p}{n}} \)
+\end{itemize}
+
+\subsection{Akka}
+
+\begin{itemize}
+    \item \texttt{Actor::createReceive()}: called if message is received, creates \texttt{Receive} object
+    \item \texttt{ReceiveBuilder receiveBuilder()}: builder for \texttt{Receive} objects
+    \item \texttt{ReceiveBuilder::match(Class<P> type, UnitApply<P> apply)}: handles messages of specified type by using apply method (method expecting object type \texttt{P})
+    \item \texttt{RecieveBuilder::match(Class<P> type, TypedPredicate<P> predicate, \\ UnitApply<P> apply)}: works like above, also checks predicate
+    \item \texttt{matchAny(UnitApply<Object> apply)}: handles messages of any type with \texttt{apply}
+    \item \texttt{Actor::preStart() / postStop()}: executed before actor start/after stop
+    \item \texttt{Actor::preRestart() / postRestart()}: executed before/after actor is restarted
+    \item \texttt{Actor::getSelf()}: delivers reference (\texttt{ActorRef}) to the actor
+    \item \texttt{Actor::getContext()}: delivers \texttt{ActorRefFactory} for creating new actors
+    \item \texttt{Actor::getSender()}: reference to actor sending the currently processed message
+    \item \texttt{Props::create(Class<?> actorType, Object... parameters)}: \texttt{Props} for creating an actor of given type
+    \item \texttt{ActorRefFactory::actorOf(Props props)}: returns \texttt{ActorRef} for created actor (implemented by \texttt{ActorSystem} and actor context)
+    \item \texttt{ActorSystem::create(String)}: returns an \texttt{ActorSystem}
+    \item \texttt{ActorSystem::terminate()}: terminates actor system
+    \item \texttt{ActorRef::tell(Object msg, ActorRef sender)}: asynchronous message send
+    \item \texttt{Patterns:ask(ActorRef trg, Object msg, Timeout tout)}: returns \texttt{Future<?>}
+    \item \texttt{Await::result(Future<T> future, Duration duration)}: wait for result
+    \item \texttt{ActorRefFactor::stop(ActorRef actorToStop)}: stops actor
+    \item \texttt{PoisonPill.getInstance()}: stop actor by sending posion pill
+\end{itemize}
+
+\noindent
+\texttt{public Receive createReceive() \{} \\
+\mbox{\texttt{~~return receiveBuilder()}} \\
+\mbox{\texttt{~~~~.match(String.class,}} \\
+\mbox{\texttt{~~~~~~message -> message.equals("printHello"),}} \\
+\mbox{\texttt{~~~~~~message -> System.out.println("Hello World!"))}} \\
+\mbox{\texttt{~~~~.matchAny(message -> unhandled(message))}} \\
+\mbox{\texttt{~~~~.build();}} \\
+\mbox{\texttt{\}}} \\
+
+\section{Compilerbau}
+
+\begin{itemize}
+    \item Indizmenge von \( A \rightarrow \alpha : \textrm{First}_k ( \alpha \textrm{Follow}_k ( A ) ) \) 
+    \item SLL(\( k \))-Bedingung: \( \forall A \rightarrow \alpha \; | \; \beta : 
+    \textrm{First}_k ( \alpha \textrm{Follow}_k ( A ) ) \; \cap \;
+    \textrm{First}_k ( \beta \textrm{Follow}_k ( A ) ) = \emptyset \)
+    \item Linksfaktorisierung: \( X \rightarrow \gamma \alpha \; | \; \gamma \beta \Rightarrow X \rightarrow \gamma X', \; X' \rightarrow \alpha \; | \; \beta \)
+\end{itemize}
+
+\end{document}

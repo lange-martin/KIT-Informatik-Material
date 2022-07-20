@@ -20,7 +20,7 @@ jobs:
     env:
       # Edit here with the names of your latex file and directory (can use ".")
       DIR: "Scalable_AI/Zusammenfassung"
-      FILE: Zusammenfassung
+      FILE: Zusammenfassung_SAI
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -57,9 +57,93 @@ jobs:
         with:
           name: ${{ env.FILE }}.pdf
           path: ./github_artifacts
+  paper3:
+    runs-on: ubuntu-latest
+    env:
+      # Edit here with the names of your latex file and directory (can use ".")
+      DIR: "Reinforcement_Learning"
+      FILE: Questions_and_Answers_RL
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install TeXlive
+        run: sudo apt-get install texlive texlive-publishers texlive-science latexmk cm-super texlive-lang-german
+      - name: LaTeX compile
+        working-directory: ${{ env.DIR }}
+        run: latexmk -pdf -bibtex ${{ env.FILE }}
+      - name: move
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+      - name: Upload pdf as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.FILE }}.pdf
+          path: ./github_artifacts
+  paper4:
+    runs-on: ubuntu-latest
+    env:
+      # Edit here with the names of your latex file and directory (can use ".")
+      DIR: "Algorithmen_2"
+      FILE: Cheat_Sheet_Algo2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install TeXlive
+        run: sudo apt-get install texlive texlive-publishers texlive-science latexmk cm-super texlive-lang-german
+      - name: LaTeX compile
+        working-directory: ${{ env.DIR }}
+        run: latexmk -pdf -bibtex ${{ env.FILE }}
+      - name: move
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+      - name: Upload pdf as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.FILE }}.pdf
+          path: ./github_artifacts
+  paper5:
+    runs-on: ubuntu-latest
+    env:
+      # Edit here with the names of your latex file and directory (can use ".")
+      DIR: "Propa"
+      FILE: cheat_sheet_propa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install TeXlive
+        run: sudo apt-get install texlive texlive-publishers texlive-science latexmk cm-super texlive-lang-german
+      - name: LaTeX compile
+        working-directory: ${{ env.DIR }}
+        run: latexmk -pdf -bibtex ${{ env.FILE }}
+      - name: move
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+      - name: Upload pdf as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.FILE }}.pdf
+          path: ./github_artifacts
+  paper6:
+    runs-on: ubuntu-latest
+    env:
+      # Edit here with the names of your latex file and directory (can use ".")
+      DIR: "Machine_Learning_1"
+      FILE: Zusammenfassung_ML
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install TeXlive
+        run: sudo apt-get install texlive texlive-publishers texlive-science latexmk cm-super texlive-lang-german
+      - name: LaTeX compile
+        working-directory: ${{ env.DIR }}
+        run: latexmk -pdf -bibtex ${{ env.FILE }}
+      - name: move
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+      - name: Upload pdf as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.FILE }}.pdf
+          path: ./github_artifacts
   deploy:
     # Edit here if compiling multiple papers
-    needs: [paper,paper2]
+    needs: [paper,paper2,paper3,paper4,paper5,paper6]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

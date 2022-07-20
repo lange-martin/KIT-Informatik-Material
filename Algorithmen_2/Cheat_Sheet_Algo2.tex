@@ -1,0 +1,186 @@
+\documentclass[11pt]{scrartcl}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[ngerman]{babel}
+\usepackage{ulem}
+\usepackage{listings}
+\usepackage{bm}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{makecell}
+\usepackage{xltabular}
+\title{Algorithmen 2}
+\date{\vspace{-5ex}}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\begin{document}
+\maketitle
+
+\begin{xltabular}{\linewidth}{p{60mm}p{80mm}}
+    Algorithmus &
+    Komplexität \\
+    \hline
+    \makecell[l]{\textbf{Prioritätslisten}}\vspace{-1em} & \\ 
+    \hline
+    Pairing Heaps &
+    insert, merge: $\mathcal{O}(1)$, deleteMin, remove: $\mathcal{O}(\log n)$ amortisiert,
+    decreaseKey: $\mathcal{O}(\log \log n) \leq T \leq \mathcal{O}(\log n)$ \\
+    \hline
+    Fibonacci Heaps &
+    deleteMin, remove: $\mathcal{O}(\log n)$ amortisiert, andere Operationen: $\mathcal{O}(1)$ \\
+    \hline
+    Radix Heap &
+    insert, deleteMin: $\mathcal{O}(K)$, decreaseKey: $\mathcal{O}(1)$ \\
+    \hline
+    \makecell[l]{\textbf{Graphenalgorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Dijkstra &
+    $\mathcal{O}(m \cdot T_\mathrm{decreaseKey}(n) + n \cdot (T_\mathrm{deleteMin}(n) + 
+    T_\mathrm{insert}(n)))$. Mit Fibonacci Heap: $\mathcal{O}(m + n \log n)$. Erwartete 
+    Laufzeit mit Binary Heap: $\mathcal{O}(m + n \log \frac{m}{n} \log n)$. 
+    $T_\mathrm{DijkstraBQ} = \mathcal{O}(m + nC)$ oder $\mathcal{O}(m + 
+    \mathrm{maxPathLength})$. $T_\mathrm{DijkstraRadix} = \mathcal{O}(m + n \cdot \log C)$.\\
+    \hline
+    All-Pairs Shortest Paths mit Knotenpotentialen &
+    $\mathcal{O}(nm + n^2 \log n)$ \\
+    \hline
+    Schrumpfgraph / SCC Berechnung &
+    $\mathcal{O}(m + n)$ \\
+    \hline
+    Ford-Fulkerson Maximum Flow &
+    $\mathcal{O}(mnU)$, $ U$: largest capacity \\
+    \hline
+    Dinic Maximum Flow &
+    $\mathcal{O}(mn^2)$, $\mathcal{O}(mn \log n)$ with dynamic trees, $\mathcal{O}((m + n) 
+    \sqrt{m})$ with unit capacities, $\mathcal{O}((m + n)\sqrt{n})$ with unit networks \\
+    \hline
+    Preflow push &
+    Arbitrary: $\mathcal{O}(n^2 m)$, FIFO: $\mathcal{O}(n^3)$, Highest Level: 
+    $\mathcal{O}(n^2 \sqrt{m})$\\
+    \hline
+    Goldberg-Tarjan &
+    $\mathcal{O}(mn \log (n^2 / m))$ \\
+    \hline
+    \makecell[l]{\textbf{Randomisierte Algorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Sortieren Ergebnisüberprüfung &
+    $\mathcal{O}(n)$ \\
+    \hline
+    Cuckoo Hashing &
+    ? \\
+    \hline
+    \makecell[l]{\textbf{Externe Algorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Externe Stapel &
+    $\mathcal{O}(1 / B)$ I/Os pro Operation amortisiert \\
+    \hline
+    Externes Sortieren &
+    $\mathcal{O}(2 \frac{n}{B} (\log_\frac{M}{B} \frac{n}{M} ))$ I/Os\\
+    \hline
+    Mehrwegemischen &
+    Sortieren: $\mathcal{O}(2 \frac{n}{B} (1 + \lceil \log_{M/B} \frac{n}{M} \rceil))$ I/Os\\
+    \hline
+    Externe Prioritätslisten &
+    deleteMin: $\mathcal{O}(\log m)$, insert: amortisiert $\mathcal{O}(\log m)$. ($m$: Länge der 
+    einzelnen sortierten Sequenzen) \\
+    \hline
+    \makecell[l]{\textbf{Approximationsalgorithmen}}\vspace{-1em} & \\ 
+    \hline
+    ListScheduling &
+    ? \\
+    \hline
+    Rucksackproblem: Dynamische Programmierung &
+    Zeit: $\mathcal{O}(n \hat{P})$ pseudo-polynomiell ($\hat{P}$ ist obere Schranke für den Profit,
+    z.B. $\sum_i p_i$). Platz: $\hat{P} + \mathcal{O}(n)$ Maschinenworte plus $\hat{P} n$ Bits. \\
+    \hline
+    FPTAS für Knapsack &
+    Laufzeit $\mathcal{O}(n^3 / \varepsilon) $ \\
+    \hline
+    \makecell[l]{\textbf{Fixed-Parameter-Algorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Vertex Cover &
+    Laufzeit $\mathcal{O}(2^k(n + m))$, $k$: maximale Kardinalität des Covers \\
+    \hline
+    \makecell[l]{\textbf{Parallele Algorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Reduktion &
+    Zeit $T_\mathrm{seq}(n/p) + \Theta(\log p)$ \\
+    \hline
+    Präfixsummen Hyperwürfel &
+    $T_\mathrm{prefix} = \mathcal{O}((\alpha + l \beta) \log p)$ \\
+    \hline
+    Paralleles Quicksort &
+    Erwartete Gesamtzeit: $\mathcal{O}(\alpha \log^2 p)$ \\
+    \hline
+    \makecell[l]{\textbf{Geometrische Algorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Streckenschnitt &
+    $\mathcal{O}((n + k) \log n)$ \\
+    \hline
+    Graham's Scan &
+    Sortieren + $\mathcal{O}(n)$ \\
+    \hline
+    Kleinste einschließende Kugel &
+    Erwartet $\mathcal{O}(n)$ \\
+    \hline
+    2D Bereichssuche &
+    Vorverarbeitungszeit $\mathcal{O}(n \log n)$, Platz $\mathcal{O}(n)$, Anfragebearbeitung
+    $\mathcal{O}(\log n)$ (Counting), $\mathcal{O}(k + \log n)$ oder wenigsten $\mathcal{O}(k 
+    \cdot \log n)$ (Reporting) \\
+    \hline
+    \makecell[l]{\textbf{Onlinealgorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Ski Rental &
+    ? \\
+    \hline
+    Paging &
+    ? \\
+    \hline
+    \makecell[l]{\textbf{Stringalgorithmen}}\vspace{-1em} & \\ 
+    \hline
+    Multikey Quicksort &
+    $\mathcal{O}(k \log k + N)$, $k$: Anzahl Strings, $N$: Länge der Strings\\
+    \hline
+    Naive Mustersuche &
+    $\mathcal{O}(n \cdot m)$ \\ 
+    \hline
+    Knuth-Morris-Pratt &
+    $\mathcal{O}(n + m)$ \\
+    \hline
+    Berechnung des Border-Arrays &
+    $\mathcal{O}(m)$ \\
+    \hline
+    Text Index &
+    $\mathcal{O}(m)$ Zeit für Mustersuche, $\mathcal{O}(n)$ Zeit für Aufbau \\
+    \hline
+    Suffix-Baum &
+    $\mathcal{O}(m)$ Suchzeit mit $\mathcal{O}(n \sigma)$ Wörter Platz, $\mathcal{O}(m \cdot 
+    \log \sigma)$ Suchzeit mit $\mathcal{O}(n)$ Wörter Platz. Konstruktion $\mathcal{O}(n)$.
+    $\sigma$: Länge des Alphabets \\
+    \hline
+    DC3 &
+    $\mathcal{O}(n)$ \\
+    \hline
+    Präfix-Doubling &
+    $\mathcal{O}(n \log n)$, Platzbedarf $8n (+ n)$ Wörter \\
+    \hline
+    LCP-Array-Konstruktion &
+    $\mathcal{O}(n)$ \\
+    \hline
+    LZ77 &
+    $\mathcal{O}(n)$ \\
+    \hline
+    PSV/NSV &
+    $\mathcal{O}(n)$ \\
+    \hline
+    RMQ &
+    $\mathcal{O}(n)$ Wörter Platz, Anfrage in $\mathcal{O}(1)$ \\
+    \hline
+    Wavelet-Tree &
+    Konstruktion (naiv) $\mathcal{O}(n \log \sigma)$, $n \lceil \log \sigma \rceil (1 + o(1))$ 
+    Bits Platz. Rank- und Select-Anfragen in $\mathcal{O}(\log \sigma)$, Zeichenzugriff in 
+    $\mathcal{O}(\log \sigma)$ \\
+\end{xltabular}
+
+\end{document}
