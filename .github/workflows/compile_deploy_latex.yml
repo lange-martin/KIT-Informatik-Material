@@ -36,9 +36,30 @@ jobs:
         with:
           name: ${{ env.FILE }}.pdf
           path: ./github_artifacts
+  paper2:
+    runs-on: ubuntu-latest
+    env:
+      # Edit here with the names of your latex file and directory (can use ".")
+      DIR: "Formale_Systeme_2_Theorie"
+      FILE: Zusammenfassung_FS2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install TeXlive
+        run: sudo apt-get install texlive texlive-publishers texlive-science latexmk cm-super texlive-lang-german
+      - name: LaTeX compile
+        working-directory: ${{ env.DIR }}
+        run: latexmk -pdf -bibtex ${{ env.FILE }}
+      - name: move
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+      - name: Upload pdf as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.FILE }}.pdf
+          path: ./github_artifacts
   deploy:
     # Edit here if compiling multiple papers
-    needs: [paper]
+    needs: [paper,paper2]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -1,0 +1,146 @@
+\documentclass[11pt]{scrartcl}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[ngerman]{babel}
+\usepackage{ulem}
+\usepackage{listings}
+\usepackage{bm}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{makecell}
+\usepackage{xltabular}
+\title{Formale Systeme 2: Theorie}
+\date{\vspace{-5ex}}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\begin{document}
+\maketitle
+
+\section{Social Choice}
+
+\begin{xltabular}{\linewidth}{p{60mm}p{80mm}}
+    \textbf{Wahlverfahren} &
+    \textbf{Eigenschaften} \\ \hline
+    
+    Borda Count &
+    Positional Scoring Rule with $m-1$ to $0$ \\ \hline
+
+    Condorcet &
+    Winner only exists sometimes \\ \hline
+
+    Plurality Rule &
+    Ballot only includes one candidate
+    
+    Positional Scoring Rule with $1, 0, 0, \dots$ \\ \hline
+
+    Plurality with Run-Off &
+    No-Show Paradox (violates monotonicity) \\ \hline
+
+    Positional Scoring Rule &
+    Violates Condorcet principle \\ \hline
+
+    Copeland Rule &
+    Satisfies Condorcet principle
+    
+    Tournament Solution \\ \hline
+
+    Tournament Solutions &
+    Majority Graph \\ \hline
+
+    Kemeny Rule &
+    Satisfies Condorcet principle
+    
+    Based on weighted majority graph \\ \hline
+
+    Voting Tree (Cup Rule) &
+    Satisifies Condorcet principle
+
+    Most such rules violate neutrality \\ \hline
+
+    Single Transferable Vote (STV) &
+    No-Show Paradox (violates monotonicity) \\ \hline
+
+    Approval Voting (AV) &
+    Ballots cannot be modelled as linear orders over the set of alternatives \\ \hline
+
+    Median Voter Rule &
+    Different ballot domain: predetermined left-to-right ordering, single-peaked preferences
+    
+    Satisfies Condorcet principle
+    
+    Strategy-proof 
+    
+    Weakly Pareto
+    
+    Independence of Irrelevant Alternatives\\ \hline
+
+    Banach-Knaster Last-Diminisher Protocol &
+
+    Each agent is guaranteed a proportional piece \\ \hline
+
+    Gale-Shapley Algorithm &
+
+    Stable matching for "marriage problem" \\
+\end{xltabular}
+
+\newpage
+
+
+\begin{xltabular}{\linewidth}{p{40mm}p{100mm}}
+    \textbf{Theorem} &
+    \textbf{Eigenschaften} \\ \hline
+
+    May's Theorem &
+    Two alternatives
+
+    Anonymity (order of voters irrelevant)
+
+    Neutrality (order of candidates irrelevant)
+
+    Postive Responsiveness (winner becomes unique if ranking increases)
+
+    $\Leftrightarrow$ Plurality Rule \\ \hline
+
+    Young's Theorem &
+    Anonymity
+
+    Neutrality
+
+    Reinforcement (common winner of groups is total winner)
+
+    Continuity (repeat voters until their winner wins in total)
+    
+    $\Leftrightarrow$ Positional Scoring Rule \\ \hline
+
+    Arrow's Theorem &
+
+    Three or more alternatives
+
+    Weakly Pareto ($b(x \succ y) = \mathcal{N} \Rightarrow y \notin F(b)$) 
+    
+    Independence of Irrelevant Alternatives 
+    
+    $\Leftrightarrow$ Dictatorship\\ \hline
+
+    Gibbard-Satterthwaite Theorem &
+    Resolute voting procedure (exactly one winner)
+
+    Three or more alternatives
+
+    Surjective (any candidate can win)
+
+    Strategy-proof (result never improves for ballot with false preference)
+
+    $\Rightarrow$ Dictatorship \\ \hline
+
+    Black's Median Voter Theorem &
+    Odd number of voters
+
+    Single-peaked ballots
+
+    $\Rightarrow \exists$Condorcet winner and it is elected by median voter rule \\ \hline
+
+\end{xltabular}
+
+\end{document}
